@@ -45,4 +45,10 @@ public class UserController {
 
         //return userList;
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
+        userService.login(userDTO);
+        return new ResponseEntity<>("logged in", HttpStatus.OK);
+    }
 }

@@ -18,8 +18,7 @@ public class User {
     private int userId;
 
     private String emailAddress;
-    private String password;
-    private String confirmPassword;
+    private String token;
 
     private String role;
 

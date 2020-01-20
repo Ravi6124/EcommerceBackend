@@ -8,4 +8,6 @@ public interface UserService {
     public PasswordEncoder encoder();
     User registerUser(UserDTO userDTO);
     Iterable<User> findAll();
+
+    boolean login(UserDTO userDTO);
 }
