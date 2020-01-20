@@ -1,96 +1,25 @@
 package com.example.Merchant.MicroService.Entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Table(name="MERCHANT")
-@Entity
+
+@Document(value="MERCHANT")
+@Getter
+@Setter
 public class MerchantEntity
 {
     @Id
-    String merchantId;
-    String email;
-    String firstName;
-    String lastName;
-    String contactNumber;
-    String password;
-    String city;
-    int merchantRating;
-    int numberOfMerchantRatings;
-
-    public String getMerchantId() {
-        return merchantId;
-    }
-
-    public void setMerchantId(String merchantId) {
-        this.merchantId = merchantId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getContactNumber() {
-        return contactNumber;
-    }
-
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public int getMerchantRating() {
-        return merchantRating;
-    }
-
-    public void setMerchantRating(int merchantRating) {
-        this.merchantRating = merchantRating;
-    }
-
-    public int getNumberOfMerchantRatings() {
-        return numberOfMerchantRatings;
-    }
-
-    public void setNumberOfMerchantRatings(int numberOfMerchantRatings) {
-        this.numberOfMerchantRatings = numberOfMerchantRatings;
-    }
-
-
-
+    private String merchantId;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String contactNumber;
+    private String password;
+    private String city;
+    private int merchantRating;
+    private int numberOfMerchantRatings;
+    int totalProductSold;
 }
