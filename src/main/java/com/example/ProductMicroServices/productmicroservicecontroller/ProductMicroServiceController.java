@@ -62,7 +62,7 @@ public class ProductMicroServiceController {
       return productDtos;
     }
 
-    @GetMapping("product/{id}")
+    @GetMapping("{id}")
     ResponseEntity<ProductDto> getProductByProductId(@PathVariable("id") String productId){
         Optional<ProductDto> productDto= productService.getProductByProductId(productId);
         if(productDto.isPresent()){
@@ -73,13 +73,13 @@ public class ProductMicroServiceController {
         }
     }
 
-    @GetMapping("product/present/{name}")
-    ResponseEntity<String> isProductPresent(String productName){
+    @GetMapping("present/{productName}")
+    ResponseEntity<String> isProductPresent(@PathVariable("productName") String productName){
         return productService.isProductPresent(productName);
     }
 
-    @PutMapping("product/update/{id}/{offset}")
-    ResponseEntity<String> updateStock(@PathVariable("id") String productId,@PathVariable int offset){
+    @PutMapping("update/{id}/{offset}")
+    ResponseEntity<String> updateStock(@PathVariable("id") String productId,@PathVariable("offset") int offset){
         productService.updateStock(productId,offset);
         return new ResponseEntity<String>(HttpStatus.OK);
     }

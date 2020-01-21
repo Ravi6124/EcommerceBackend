@@ -64,9 +64,8 @@ public class ProductServiceImpl implements ProductService {
         Iterator<ProductEntity> iterator=  allProducts.iterator();
         while(iterator.hasNext()){
             ProductEntity productEntity = iterator.next();
-            if(productEntity.getProductName().equals(productName)){
-                returnValue = productEntity.getProductId();
-            }
+            if(productName.equals(productEntity.getProductName()))
+            returnValue = productEntity.getProductId();
         }
         return  new ResponseEntity<String>(returnValue,HttpStatus.CREATED);
     }
