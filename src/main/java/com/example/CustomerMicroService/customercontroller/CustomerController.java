@@ -27,8 +27,16 @@ public class CustomerController {
     }
 
     @GetMapping("{id}")
-    public Optional<CustomerEntity> getCustomer(@PathVariable("id") String customerId) {
-        return customerService.getCustomer(customerId);
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable("id") String customerId) {
+        Optional<CustomerEntity> customerEntity = customerService.getCustomer(customerId);
+        if (customerEntity.isPresent()) {
+            CustomerDto customerDto = new CustomerDto();
+            BeanUtils.copyProperties(customerEntity.get(), customerDto);
+            return new ResponseEntity<CustomerDto>(customerDto,HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<CustomerDto>(new CustomerDto(),HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("update")
