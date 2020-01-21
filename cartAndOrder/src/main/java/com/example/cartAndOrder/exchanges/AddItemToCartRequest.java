@@ -16,6 +16,5 @@ public class AddItemToCartRequest {
     @NotNull
     CartProduct cartProduct;
 
-//
-//    String quantity;
+
 }
