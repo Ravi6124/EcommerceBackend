@@ -6,6 +6,7 @@ import com.example.cartAndOrder.entity.Order;
 import com.example.cartAndOrder.exchanges.CartProduct;
 import com.example.cartAndOrder.exchanges.orderExchanges.CheckOutResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdResponse;
+import com.example.cartAndOrder.feignClient.CustomerClient;
 import com.example.cartAndOrder.feignClient.ProductClient;
 import com.example.cartAndOrder.repository.CartRepository;
 import com.example.cartAndOrder.repository.OrderRepository;
@@ -16,6 +17,7 @@ import feign.gson.GsonEncoder;
 import feign.okhttp.OkHttpClient;
 import feign.slf4j.Slf4jLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
@@ -51,6 +53,20 @@ public class OrderServicesImpl implements OrderServices {
                 .logger(new Slf4jLogger(ProductClient.class))
                 .logLevel(Logger.Level.FULL)
                 .target(ProductClient.class, "http://172.16.20.119:8081/product/update");
+
+        CustomerClient customerClient = Feign.builder()
+                .client(new OkHttpClient())
+                .encoder(new GsonEncoder())
+                .decoder(new GsonDecoder())
+                .logger(new Slf4jLogger(CustomerClient.class))
+                .logLevel(Logger.Level.FULL)
+                .target(CustomerClient.class, "http://172.16.20.119:8080/customer/email");
+
+        String email = customerClient.getEmail("320");
+        System.out.println(email);
+
+
+
 
         List<CartProduct> cartProducts = order.getItems();
         Iterator<CartProduct> iterator = cartProducts.iterator();
