@@ -18,7 +18,7 @@ public class ProductListingEntity
     private String productId;
     private Double price;
     private int quantity;
-    int productListingRating;
-    int numberOfRatings;
+    private double productListingRating;
+    private int numberOfRatings;
 
 }

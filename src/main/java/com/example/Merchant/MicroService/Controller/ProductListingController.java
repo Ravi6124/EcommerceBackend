@@ -1,8 +1,7 @@
 package com.example.Merchant.MicroService.Controller;
 
-import com.example.Merchant.MicroService.DTO.MerchantDTO;
+import com.example.Merchant.MicroService.DTO.GetMerchantsbyPidResponse;
 import com.example.Merchant.MicroService.DTO.ProductListingDTO;
-import com.example.Merchant.MicroService.Entity.MerchantEntity;
 import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import com.example.Merchant.MicroService.service.ProductListingService;
 import org.springframework.beans.BeanUtils;
@@ -30,24 +29,44 @@ public class ProductListingController
     }
 
     @GetMapping(value="/getProductListingRating")
-    public ResponseEntity<Integer> getProductListingRating(String productListingId)
+    public ResponseEntity<Double> getProductListingRating(String productListingId)
     {
         return productListingService.getProductListingRating(productListingId);
 
     }
 
     @PutMapping(value="/updateProductListingRating")
-    public ResponseEntity<String> updateProductListingRating(@RequestBody int currentRating,String productListingId)
+    public ResponseEntity<String> updateProductListingRating(@RequestBody double currentRating,String productListingId)
     {
-        productListingService.updateProductListingRating(currentRating,productListingId);
-        return new ResponseEntity<String >(HttpStatus.OK);
+        return productListingService.updateProductListingRating(currentRating,productListingId);
     }
 
     @GetMapping(value="/getMerchantByProductId")
-    public ResponseEntity<List<MerchantDTO>> getMerchantByProductId(String productId)
+    public ResponseEntity<List<GetMerchantsbyPidResponse>> getMerchantByProductId(String productId)
     {
-        return productListingService.getMerchantByProductId(productId);
+        return  productListingService.findMerchantsbyPid(productId);
     }
+
+    @GetMapping(value="/checkStockAndUpdate")
+    public ResponseEntity<String> checkProductStockAndUpdate(String productListId, int requiredQuantity)
+    {
+        return productListingService.checkProductStockAndUpdate(productListId,requiredQuantity);
+    }
+
+    @PutMapping(value="/increaseProductStock")
+    public ResponseEntity<String> increaseProductStock(String productListId, int offset)
+    {
+        return productListingService.increaseProductStock(productListId,offset);
+    }
+
+    @GetMapping(value="/getStock")
+    public ResponseEntity<Integer> getStock(String productListingId)
+    {
+        return productListingService.getStock(productListingId);
+    }
+
+
+
 
 }
 

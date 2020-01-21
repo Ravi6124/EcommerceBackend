@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 
 @Document(value="MERCHANT")
 @Getter
@@ -19,7 +21,8 @@ public class MerchantEntity
     private String contactNumber;
     private String password;
     private String city;
-    private int merchantRating;
+    private double merchantRating;
     private int numberOfMerchantRatings;
-    int totalProductSold;
+    private int totalProductSold;
+    private List<ProductListingEntity> orderList;
 }

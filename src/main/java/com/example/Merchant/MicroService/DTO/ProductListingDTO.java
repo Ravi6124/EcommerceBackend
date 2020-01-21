@@ -1,9 +1,11 @@
 package com.example.Merchant.MicroService.DTO;
 
+import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -16,7 +18,8 @@ public class ProductListingDTO
     String productId;
     Double price;
     int quantity;
-    int productListingRating;
+    double productListingRating;
     int numberOfRatings;
+    List<ProductListingEntity> orderList;
 
 }

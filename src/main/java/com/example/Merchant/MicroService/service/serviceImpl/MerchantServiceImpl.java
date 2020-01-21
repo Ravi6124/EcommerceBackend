@@ -1,13 +1,18 @@
 package com.example.Merchant.MicroService.service.serviceImpl;
 
+import com.example.Merchant.MicroService.DTO.MerchantDTO;
 import com.example.Merchant.MicroService.Entity.MerchantEntity;
+import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import com.example.Merchant.MicroService.repository.MerchantRepository;
 import com.example.Merchant.MicroService.service.MerchantService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,29 +23,73 @@ public class MerchantServiceImpl implements MerchantService
     private MerchantRepository merchantRepository;
 
     @Override
-    public void updateMerchantRating(int currentRating, String merchantId)
+    @Transactional
+    public ResponseEntity<String> updateTotalProductSold(String merchantId, int quantity)
     {
-        MerchantEntity merchantEntity=merchantRepository.findById(merchantId).get();
-        merchantRepository.deleteById(merchantId);
-        int merchantRating=merchantEntity.getMerchantRating();
-        int numberOfRatings=merchantEntity.getNumberOfMerchantRatings();
-        int newRating=(merchantRating*numberOfRatings)/(numberOfRatings+1);
-        merchantEntity.setMerchantRating(newRating);
-        merchantRepository.save(merchantEntity);
+        Optional<MerchantEntity> merchantEntity=Optional.of(new MerchantEntity());
+        merchantEntity=merchantRepository.findById(merchantId);
+        if(merchantEntity.isPresent())
+        {
+            int totalProductSold=merchantEntity.get().getTotalProductSold();
+            totalProductSold+=quantity;
+            merchantEntity.get().setTotalProductSold(totalProductSold);
+            return new ResponseEntity<String>(HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
-    public ResponseEntity<Integer> getMerchantRating(String merchantId)
+    @Transactional
+    public ResponseEntity<String> updateMerchantRating(double currentRating, String merchantId)
     {
-        MerchantEntity merchantEntity=merchantRepository.findById(merchantId).get();
-        return new ResponseEntity<Integer>(merchantEntity.getMerchantRating(), HttpStatus.OK);
+        Optional<MerchantEntity> merchantEntity=merchantRepository.findById(merchantId);
+        if(merchantEntity.isPresent())
+        {
+            double merchantRating = merchantEntity.get().getMerchantRating();
+            int numberOfRatings = merchantEntity.get().getNumberOfMerchantRatings();
+            double newRating = (merchantRating * numberOfRatings) / (numberOfRatings + 1);
+            merchantEntity.get().setMerchantRating(newRating);
+            return  new ResponseEntity<String>(HttpStatus.OK);
+        }
+        else
+        {
+            return  new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
-    public Optional<MerchantEntity> findById(String merchantId)
-
+    public ResponseEntity<Double> getMerchantsRating(String merchantId)
     {
-        return merchantRepository.findById(merchantId);
+        Optional<MerchantEntity> merchantEntity=merchantRepository.findById(merchantId);
+        if(merchantEntity.isPresent())
+        {
+            return new ResponseEntity<Double>(merchantEntity.get().getMerchantRating(), HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<Double>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+    @Override
+    public ResponseEntity<MerchantDTO> findMerchantById (String merchantId)
+    {
+        Optional<MerchantEntity> merchantEntity=merchantRepository.findById(merchantId);
+        if(merchantEntity.isPresent())
+        {
+            MerchantDTO merchantDTO=new MerchantDTO();
+            BeanUtils.copyProperties(merchantEntity.get(),merchantDTO);
+            return new ResponseEntity<MerchantDTO>(merchantDTO, HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<MerchantDTO>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
@@ -50,4 +99,17 @@ public class MerchantServiceImpl implements MerchantService
         return merchantRepository.save(merchantEntity);
     }
 
+    @Override
+    public ResponseEntity<Integer> getTotalProductSold(String merchantId)
+    {
+        Optional<MerchantEntity> merchantEntity=merchantRepository.findById(merchantId);
+        if(merchantEntity.isPresent())
+        {
+            return new ResponseEntity<Integer>(merchantEntity.get().getTotalProductSold(), HttpStatus.OK);
+        }
+        else
+        {
+            return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

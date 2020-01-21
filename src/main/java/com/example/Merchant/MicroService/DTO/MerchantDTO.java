@@ -14,7 +14,7 @@ public class MerchantDTO
     private String contactNumber;
     private String password;
     private String city;
-    private int merchantRating;
+    private double merchantRating;
     private int numberOfMerchantRatings;
     int totalProductSold;
 }
