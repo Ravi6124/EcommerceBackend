@@ -73,9 +73,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void updateStock(String productId, int stockOffset) {
         Optional<ProductEntity> productEntity = productRepository.findById(productId);
-        productRepository.delete(productEntity.get());
-        productEntity.get().setTotalStock(productEntity.get().getTotalStock() + stockOffset);
-        productRepository.insert(productEntity.get());
+        if(productEntity.isPresent()) {
+            ProductEntity productEntityCopy = productEntity.get();
+            productRepository.delete(productEntity.get());
+            productEntity.get().setTotalStock(productEntityCopy.getTotalStock() + stockOffset);
+            productRepository.insert(productEntityCopy);
+        }
     }
 
 }
