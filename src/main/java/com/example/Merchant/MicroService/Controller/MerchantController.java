@@ -30,34 +30,34 @@ public class MerchantController
         return new ResponseEntity<String>(merchantCreated.getMerchantId(),HttpStatus.CREATED);
     }
 
-    @GetMapping(value="/getMerchantById")
-    public ResponseEntity<MerchantDTO> getMerchantById (@RequestBody String merchantId)
+    @GetMapping(value="/getMerchantById/{merchantId}")
+    public ResponseEntity<MerchantDTO> getMerchantById (@PathVariable("merchantId") String merchantId)
     {
         return merchantService.findMerchantById(merchantId);
     }
 
-    @GetMapping(value="/getMerchantRating")
-    public ResponseEntity<Double> getMerchantRating(String merchantId)
+    @GetMapping(value="/getMerchantRating/{merchantId}")
+    public ResponseEntity<Double> getMerchantRating(@PathVariable("merchantId") String merchantId)
     {
         return merchantService.getMerchantsRating(merchantId);
 
     }
 
-    @PutMapping(value="/updateMerchantRating")
-    public ResponseEntity<String > updateMerchantRating(@RequestBody double currentRating,String merchantId)
+    @PutMapping(value="/updateMerchantRating/{currentRating}/{merchantId}")
+    public ResponseEntity<String > updateMerchantRating(@PathVariable("currentRating") double currentRating,@PathVariable("merchantId") String merchantId)
     {
         return merchantService.updateMerchantRating(currentRating, merchantId);
     }
 
-    @PutMapping(value="/updateTotalProductSold")
-    public ResponseEntity<String> updateTotalProductSold(String merchantId,int quantity)
+    @PutMapping(value="/updateTotalProductSold/{merchantId}/{quantity}")
+    public ResponseEntity<String> updateTotalProductSold(@PathVariable("merchantId") String merchantId,@PathVariable("quantity") int quantity)
     {
 
         return merchantService.updateTotalProductSold(merchantId,quantity);
     }
 
-    @GetMapping(value="/getTotalProductSold")
-    public ResponseEntity<Integer> getTotalProductSold(String merchantId)
+    @GetMapping(value="/getTotalProductSold/{merchantId}")
+    public ResponseEntity<Integer> getTotalProductSold(@PathVariable("merchantId") String merchantId)
     {
         return merchantService.getTotalProductSold(merchantId);
     }

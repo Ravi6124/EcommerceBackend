@@ -33,6 +33,8 @@ public class MerchantServiceImpl implements MerchantService
             int totalProductSold=merchantEntity.get().getTotalProductSold();
             totalProductSold+=quantity;
             merchantEntity.get().setTotalProductSold(totalProductSold);
+            merchantRepository.deleteById(merchantId);
+            merchantRepository.save(merchantEntity.get());
             return new ResponseEntity<String>(HttpStatus.OK);
         }
         else
@@ -50,8 +52,10 @@ public class MerchantServiceImpl implements MerchantService
         {
             double merchantRating = merchantEntity.get().getMerchantRating();
             int numberOfRatings = merchantEntity.get().getNumberOfMerchantRatings();
-            double newRating = (merchantRating * numberOfRatings) / (numberOfRatings + 1);
+            double newRating = (merchantRating * numberOfRatings) + currentRating / (numberOfRatings + 1);
             merchantEntity.get().setMerchantRating(newRating);
+            merchantRepository.deleteById(merchantEntity.get().getMerchantId());
+            merchantRepository.save(merchantEntity.get());
             return  new ResponseEntity<String>(HttpStatus.OK);
         }
         else

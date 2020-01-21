@@ -28,26 +28,26 @@ public class ProductListingController
         return new ResponseEntity<String>(productListCreated.getProductListingId(),HttpStatus.CREATED);
     }
 
-    @GetMapping(value="/getProductListingRating")
-    public ResponseEntity<Double> getProductListingRating(String productListingId)
+    @GetMapping(value="/getProductListingRating/{productListingId}")
+    public ResponseEntity<Double> getProductListingRating(@PathVariable("productListingId") String productListingId)
     {
         return productListingService.getProductListingRating(productListingId);
 
     }
 
-    @PutMapping(value="/updateProductListingRating")
-    public ResponseEntity<String> updateProductListingRating(@RequestBody double currentRating,String productListingId)
+    @PutMapping(value="/updateProductListingRating/{productListingId}/{currentRating}")
+    public ResponseEntity<String> updateProductListingRating(@PathVariable("productListingId") String productListingId,@PathVariable("currentRating") double currentRating)
     {
         return productListingService.updateProductListingRating(currentRating,productListingId);
     }
 
-    @GetMapping(value="/getMerchantByProductId")
-    public ResponseEntity<List<GetMerchantsbyPidResponse>> getMerchantByProductId(String productId)
+    @GetMapping(value="/getMerchantByProductId/{productId}")
+    public ResponseEntity<List<GetMerchantsbyPidResponse>> getMerchantByProductId(@PathVariable("productId") String productId)
     {
         return  productListingService.findMerchantsbyPid(productId);
     }
 
-    @GetMapping(value="/checkStockAndUpdate")
+    @GetMapping(value="/checkStockAndUpdate/{productListId}/{requiredQuantity}")
     public ResponseEntity<String> checkProductStockAndUpdate(String productListId, int requiredQuantity)
     {
         return productListingService.checkProductStockAndUpdate(productListId,requiredQuantity);
