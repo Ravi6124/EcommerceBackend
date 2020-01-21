@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sun.dc.pr.PRError;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +63,14 @@ public class ProductMicroServiceController {
     }
 
     @GetMapping("product/{id}")
-    ResponseEntity<Optional<ProductDto>> getProductByProductId(@PathVariable("id") String productId){
-        return new ResponseEntity<Optional<ProductDto>>(productService.getProductByProductId(productId),HttpStatus.OK);
+    ResponseEntity<ProductDto> getProductByProductId(@PathVariable("id") String productId){
+        Optional<ProductDto> productDto= productService.getProductByProductId(productId);
+        if(productDto.isPresent()){
+            return new ResponseEntity<ProductDto>(productDto.get(),HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<ProductDto>(new ProductDto(),HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("product/present/{name}")

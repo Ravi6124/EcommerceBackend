@@ -53,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
     public Optional<ProductDto> getProductByProductId(String productId) {
         Optional<ProductEntity> productEntity= productRepository.findById(productId);
         ProductDto productDto = new ProductDto();
-        BeanUtils.copyProperties(productEntity,productDto);
+        BeanUtils.copyProperties(productEntity.get(),productDto);
         return Optional.of(productDto);
     }
 
