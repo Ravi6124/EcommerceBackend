@@ -38,6 +38,7 @@ public class ProductMicroServiceController {
 
     @PostMapping("/product")
     public ResponseEntity<String> addProduct(@RequestBody ProductDto productDto){
+        productDto.setProductName(productDto.getProductName().toLowerCase());
         ProductEntity productEntity = new ProductEntity();
         BeanUtils.copyProperties(productDto,productEntity);
         ProductEntity productCreated = productService.addProduct(productEntity);
@@ -76,7 +77,7 @@ public class ProductMicroServiceController {
 
     @GetMapping("present/{productName}")
     ResponseEntity<String> isProductPresent(@PathVariable("productName") String productName){
-        return productService.isProductPresent(productName);
+        return productService.isProductPresent(productName.toLowerCase());
     }
 
     @PutMapping("update/{id}/{offset}")
