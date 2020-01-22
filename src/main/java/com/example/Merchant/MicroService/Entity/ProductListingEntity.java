@@ -4,18 +4,22 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Document(value="PRODUCTLISTING")
 @Getter
 @Setter
 public class ProductListingEntity
 {
     private String productListingId;
-    private Map< String,String> attributeMap=new HashMap<>();
+
+    private String color;
+    private String size;
+    private String theme;
+
     private String merchantId;
     private String productId;
+    private String productName;
+    private String productDescription;
+    private String productImageURL;
     private Double price;
     private int quantity;
     private double productListingRating;

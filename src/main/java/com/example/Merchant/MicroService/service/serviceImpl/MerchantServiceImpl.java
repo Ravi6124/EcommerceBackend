@@ -2,9 +2,9 @@ package com.example.Merchant.MicroService.service.serviceImpl;
 
 import com.example.Merchant.MicroService.DTO.MerchantDTO;
 import com.example.Merchant.MicroService.Entity.MerchantEntity;
-import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import com.example.Merchant.MicroService.repository.MerchantRepository;
 import com.example.Merchant.MicroService.service.MerchantService;
+import com.example.Merchant.MicroService.service.ProductListingService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,11 +22,14 @@ public class MerchantServiceImpl implements MerchantService
     @Autowired
     private MerchantRepository merchantRepository;
 
+    @Autowired
+    private ProductListingService productListingService;
+
     @Override
     @Transactional
     public ResponseEntity<String> updateTotalProductSold(String merchantId, int quantity)
     {
-        Optional<MerchantEntity> merchantEntity=Optional.of(new MerchantEntity());
+        Optional<MerchantEntity> merchantEntity=Optional.empty();
         merchantEntity=merchantRepository.findById(merchantId);
         if(merchantEntity.isPresent())
         {
@@ -35,6 +38,10 @@ public class MerchantServiceImpl implements MerchantService
             merchantEntity.get().setTotalProductSold(totalProductSold);
             merchantRepository.deleteById(merchantId);
             merchantRepository.save(merchantEntity.get());
+
+
+            //add logic to update total stock here too
+
             return new ResponseEntity<String>(HttpStatus.OK);
         }
         else
@@ -57,6 +64,9 @@ public class MerchantServiceImpl implements MerchantService
             merchantRepository.deleteById(merchantEntity.get().getMerchantId());
             merchantRepository.save(merchantEntity.get());
             return  new ResponseEntity<String>(HttpStatus.OK);
+
+            //add logic to update total stock here too
+
         }
         else
         {
@@ -96,12 +106,15 @@ public class MerchantServiceImpl implements MerchantService
         }
     }
 
+
+
     @Override
     public MerchantEntity save(MerchantEntity merchantEntity)
-
     {
         return merchantRepository.save(merchantEntity);
     }
+
+
 
     @Override
     public ResponseEntity<Integer> getTotalProductSold(String merchantId)

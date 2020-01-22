@@ -1,5 +1,6 @@
 package com.example.Merchant.MicroService.service;
 
+import com.example.Merchant.MicroService.DTO.CheckStockAndUpdateResponse;
 import com.example.Merchant.MicroService.DTO.GetMerchantsbyPidResponse;
 import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,14 @@ public interface ProductListingService
 
     ResponseEntity<String> updateProductListingRating(double currentRating, String productListingId);
 
-    ResponseEntity<List<GetMerchantsbyPidResponse>> findMerchantsbyPid(String productId);
+    List<GetMerchantsbyPidResponse> findMerchantsbyPid(String productId);
 
-    ResponseEntity<String> checkProductStockAndUpdate(String productListingId,int requiredQuantity);
+    CheckStockAndUpdateResponse checkProductStockAndUpdate(String productId, String merchantId, int requiredQuantity);
 
     ResponseEntity<String> increaseProductStock(String productListId, int offset);
 
     ResponseEntity<Integer> getStock(String productListingId);
+
+    void setDefaultMerchantIdAndDefaultPrice(String productId);
 
 }

@@ -5,7 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetMerchantsbyPidResponse {
+public class GetMerchantsbyPidResponse
+{
     private String merchantId;
     private String productId;
     private String merchantName;
