@@ -72,7 +72,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void updateStock(String productId, int stockOffset) {
+    public void updateStock(String productId, int stockOffset)
+    {
         Optional<ProductEntity> productEntity = productRepository.findById(productId);
         if(productEntity.isPresent()) {
             ProductEntity productEntityCopy = productEntity.get();
@@ -83,14 +84,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<String> updateMerchantPrice(ProductMerchant productMerchant) {
-        Optional<ProductDto> productDto = getProductByProductId(productMerchant.getProductId());
+    public ResponseEntity<String> updateMerchantPrice(String productId,String merchnatId,double price) {
+        Optional<ProductDto> productDto = getProductByProductId(productId);
         if(productDto.isPresent()){
             ProductDto product = productDto.get();
             ProductEntity productEntity = new ProductEntity();
             BeanUtils.copyProperties(product,productEntity);
-            productEntity.setDefaultMerchantId(productMerchant.getDefaultMerchantId());
-            productEntity.setDefaultPrice(productMerchant.getDefaultPrice());
+            productEntity.setDefaultMerchantId(merchnatId);
+            productEntity.setDefaultPrice(price);
             productRepository.delete(productEntity);
             productRepository.insert(productEntity);
             return new ResponseEntity<String>(HttpStatus.OK);

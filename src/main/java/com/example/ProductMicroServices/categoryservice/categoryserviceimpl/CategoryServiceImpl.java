@@ -25,5 +25,4 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryEntity> getAllCategories() {
        return categoryRepository.findAll();
     }
-
 }

@@ -23,8 +23,10 @@ import java.util.function.Function;
 @RestController
 @RequestMapping("product")
 public class ProductMicroServiceController {
+
     @Autowired
     CategoryService categoryService;
+
     @Autowired
     ProductService productService;
 
@@ -86,9 +88,9 @@ public class ProductMicroServiceController {
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    @PutMapping("updateproduct")
-    ResponseEntity<String> updateMerchantPrice(@RequestBody ProductMerchant productMerchant){
-        return productService.updateMerchantPrice(productMerchant);
+    @PutMapping("updateproduct/{productId}/{merchantId}/{price}")
+    ResponseEntity<String> updateMerchantPrice(@PathVariable("productId") String productId,@PathVariable("merchantId") String merchantId,@PathVariable("price") double price){
+        return productService.updateMerchantPrice(productId,merchantId,price);
     }
 
 }

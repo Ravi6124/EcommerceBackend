@@ -14,5 +14,5 @@ public interface ProductService {
     Optional<ProductDto> getProductByProductId(String productId);
     ResponseEntity<String> isProductPresent(String productName);
     void updateStock(String productId,int stockOffset);
-    ResponseEntity<String> updateMerchantPrice(ProductMerchant productMerchant);
+    ResponseEntity<String> updateMerchantPrice(String productId,String merchnatId,double price);
 }
