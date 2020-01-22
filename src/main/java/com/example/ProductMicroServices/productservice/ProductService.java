@@ -1,6 +1,7 @@
 package com.example.ProductMicroServices.productservice;
 
 import com.example.ProductMicroServices.dto.ProductDto;
+import com.example.ProductMicroServices.dto.ProductMerchant;
 import com.example.ProductMicroServices.entity.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -13,5 +14,5 @@ public interface ProductService {
     Optional<ProductDto> getProductByProductId(String productId);
     ResponseEntity<String> isProductPresent(String productName);
     void updateStock(String productId,int stockOffset);
-
+    ResponseEntity<String> updateMerchantPrice(ProductMerchant productMerchant);
 }

@@ -3,6 +3,7 @@ package com.example.ProductMicroServices.productmicroservicecontroller;
 import com.example.ProductMicroServices.categoryservice.CategoryService;
 import com.example.ProductMicroServices.dto.CategoryDto;
 import com.example.ProductMicroServices.dto.ProductDto;
+import com.example.ProductMicroServices.dto.ProductMerchant;
 import com.example.ProductMicroServices.entity.CategoryEntity;
 import com.example.ProductMicroServices.entity.ProductEntity;
 import com.example.ProductMicroServices.productservice.ProductService;
@@ -83,4 +84,10 @@ public class ProductMicroServiceController {
         productService.updateStock(productId,offset);
         return new ResponseEntity<String>(HttpStatus.OK);
     }
+
+    @PutMapping("updateproduct")
+    ResponseEntity<String> updateMerchantPrice(@RequestBody ProductMerchant productMerchant){
+        return productService.updateMerchantPrice(productMerchant);
+    }
+
 }

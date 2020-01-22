@@ -1,6 +1,7 @@
 package com.example.ProductMicroServices.productservice.productserviceimpl;
 
 import com.example.ProductMicroServices.dto.ProductDto;
+import com.example.ProductMicroServices.dto.ProductMerchant;
 import com.example.ProductMicroServices.entity.ProductEntity;
 import com.example.ProductMicroServices.productrepository.ProductRepository;
 import com.example.ProductMicroServices.productservice.ProductService;
@@ -78,6 +79,24 @@ public class ProductServiceImpl implements ProductService {
             productRepository.delete(productEntity.get());
             productEntity.get().setTotalStock(productEntityCopy.getTotalStock() + stockOffset);
             productRepository.insert(productEntityCopy);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> updateMerchantPrice(ProductMerchant productMerchant) {
+        Optional<ProductDto> productDto = getProductByProductId(productMerchant.getProductId());
+        if(productDto.isPresent()){
+            ProductDto product = productDto.get();
+            ProductEntity productEntity = new ProductEntity();
+            BeanUtils.copyProperties(product,productEntity);
+            productEntity.setDefaultMerchantId(productMerchant.getDefaultMerchantId());
+            productEntity.setDefaultPrice(productMerchant.getDefaultPrice());
+            productRepository.delete(productEntity);
+            productRepository.insert(productEntity);
+            return new ResponseEntity<String>(HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
     }
 
