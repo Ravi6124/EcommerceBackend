@@ -28,6 +28,7 @@ public class JwtUtil {
             return user;
 
         } catch (JwtException | ClassCastException e) {
+            e.printStackTrace();
             return null;
         }
     }
