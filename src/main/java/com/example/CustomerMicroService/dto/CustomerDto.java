@@ -12,5 +12,5 @@ public class CustomerDto {
     String contactNumber;
     String address;
     String customerId;
-
+    String profileURL;
 }

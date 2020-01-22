@@ -19,4 +19,5 @@ public class CustomerEntity {
     String lastName;
     String contactNumber;
     String address;
+    String profileURL;
 }

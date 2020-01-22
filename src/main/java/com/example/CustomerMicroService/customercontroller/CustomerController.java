@@ -47,4 +47,19 @@ public class CustomerController {
         return new ResponseEntity<String>(customerCreated.getCustomerId(),HttpStatus.CREATED);
     }
 
+    @GetMapping("email/{id}")
+    public String getEmail(@PathVariable("id") String customerId){
+        Optional<CustomerEntity> customerEntity = customerService.getCustomer(customerId);
+        if(customerEntity.isPresent()) {
+            System.out.println(customerEntity.get().getEmail());
+             return customerEntity.get().getEmail();
+        }
+        else{
+            return "";
+        }
+
+    }
+
+
+
 }
