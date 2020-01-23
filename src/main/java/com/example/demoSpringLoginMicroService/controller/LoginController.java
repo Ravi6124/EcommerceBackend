@@ -35,8 +35,13 @@ public class LoginController {
         BeanUtils.copyProperties(userDTO, user);
         user = userService.findUser(user);
         if (null != user) {
-            String accessToken = jwtUtil.generateToken(user);
-            return new ResponseEntity<>(new ApiResponse<>(accessToken), HttpStatus.OK);
+            if(user.getPassword().equals(userDTO.getPassword()))
+            {
+                String accessToken = jwtUtil.generateToken(user);
+                return new ResponseEntity<>(new ApiResponse<>(accessToken), HttpStatus.OK);
+            }
+            else
+                return new ResponseEntity<>(new ApiResponse<>(900,"Password is not correct"), HttpStatus.OK);
         }
         return new ResponseEntity<>(new ApiResponse<>(900, "Invalid Credentials"), HttpStatus.OK);
     }
@@ -60,7 +65,7 @@ public class LoginController {
             User user=new User();
             user.setEmailAddress(userDTO.getEmail());
             userService.save(user);
-            return new ResponseEntity<>(new ApiResponse<>(900,"User Found"),HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>(accessTokenDTO.getAccessToken()),HttpStatus.OK);
         }
 
         else

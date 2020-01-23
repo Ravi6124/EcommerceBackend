@@ -32,4 +32,15 @@ public class UserServiceImpl implements UserService {
         else
             return null;
     }
+
+    @Override
+    public boolean checkEmailExists(User user) {
+        Optional<User> userEmailExists=userRepository.findByEmailAddress(user.getEmailAddress());
+        Optional<User> userRoleExists=userRepository.findByRole(user.getRole());
+        if(userEmailExists.isPresent() && userRoleExists.isPresent())
+            return true;
+        else
+            return false;
+
+    }
 }

@@ -24,33 +24,33 @@ public class GoogleServiceImpl implements GoogleService {
 
 
     @Autowired
-    UserService userService;
+            UserService userService;
 
-    private static final String GOOGLE_APP_CLIENT_ID = "82806335202-ij3bqro9rstgi5ad5el56n5tmrovlaiv.apps.googleusercontent.com";
-    @Value(GOOGLE_APP_CLIENT_ID)
-    private List<String> googleAppClientIdList;
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private HttpTransport httpTransport;
+            private static final String GOOGLE_APP_CLIENT_ID = "82806335202-ij3bqro9rstgi5ad5el56n5tmrovlaiv.apps.googleusercontent.com";
+            @Value(GOOGLE_APP_CLIENT_ID)
+            private List<String> googleAppClientIdList;
+            private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+            private HttpTransport httpTransport;
 
-    @PostConstruct
-    public void init() throws GeneralSecurityException, IOException {
-        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-    }
+            @PostConstruct
+            public void init() throws GeneralSecurityException, IOException {
+                httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            }
 
-    public GoogleIdTokenVerifier getGoogleIdTokenVerifier() {
-        return new GoogleIdTokenVerifier.Builder
-                (httpTransport, JSON_FACTORY).setAudience(googleAppClientIdList).build();
-    }
+            public GoogleIdTokenVerifier getGoogleIdTokenVerifier() {
+                return new GoogleIdTokenVerifier.Builder
+                        (httpTransport, JSON_FACTORY).setAudience(googleAppClientIdList).build();
+            }
 
 
-    @Override
-    public User getGmailDetails(String accessToken) {
-        System.out.println("Inside Gmail Details");
-        User user = new User();
-        try {
+            @Override
+            public User getGmailDetails(String accessToken) {
+                System.out.println("Inside Gmail Details");
+                User user = new User();
+                try {
 
-            GoogleIdToken verifyGoogleIdToken = getGoogleIdTokenVerifier().verify(accessToken);
-            if(verifyGoogleIdToken!=null){
+                    GoogleIdToken verifyGoogleIdToken = getGoogleIdTokenVerifier().verify(accessToken);
+                    if(verifyGoogleIdToken!=null){
                 System.out.println("Inside verifyGoogleIDToken");
                 user.setEmailAddress(verifyGoogleIdToken.getPayload().getEmail());
                 System.out.println(verifyGoogleIdToken.getPayload().getEmail());

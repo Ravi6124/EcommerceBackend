@@ -22,10 +22,13 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    public ApiResponse<User> saveUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<ApiResponse<String>> saveUser(@RequestBody UserDTO userDTO) {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
+        boolean emailExists=userService.checkEmailExists(user);
+        if(emailExists)
+            return new ResponseEntity<>(new ApiResponse<>(900, "Email Address with the specified role already exists"), HttpStatus.OK);
         User userCreated = userService.save(user);
-        return new ApiResponse<>(userCreated);
+        return new ResponseEntity<>(new ApiResponse<>(1000, "User successfully registered"), HttpStatus.OK);
     }
 }
