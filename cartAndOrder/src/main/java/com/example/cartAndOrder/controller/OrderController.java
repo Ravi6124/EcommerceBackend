@@ -5,6 +5,7 @@ import com.example.cartAndOrder.entity.Cart;
 import com.example.cartAndOrder.entity.Order;
 import com.example.cartAndOrder.exchanges.CartProduct;
 import com.example.cartAndOrder.exchanges.orderExchanges.CheckOutResponse;
+import com.example.cartAndOrder.exchanges.orderExchanges.FindOrdersByMidResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdRequest;
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdResponse;
 import com.example.cartAndOrder.services.OrderServices;
@@ -70,6 +71,17 @@ public class OrderController {
 
 
         return true;
+    }
+
+    @GetMapping("/getByMerchantId/{mid}")
+    ResponseEntity<List<FindOrdersByMidResponse>> findOrdersByMechantId(@PathVariable(value = "mid") String mid){
+
+        if(mid.equals(null) || mid.equals("")){
+            return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(orderServices.findOrdersByMid(mid),HttpStatus.OK);
+
     }
 
 

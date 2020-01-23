@@ -5,6 +5,7 @@ import com.example.cartAndOrder.entity.Cart;
 import com.example.cartAndOrder.entity.Order;
 import com.example.cartAndOrder.exchanges.CartProduct;
 import com.example.cartAndOrder.exchanges.orderExchanges.CheckOutResponse;
+import com.example.cartAndOrder.exchanges.orderExchanges.FindOrdersByMidResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.UnavailableStock;
 import com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges.CheckAndUpdateRequest;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServicesImpl implements OrderServices {
@@ -181,19 +183,56 @@ public class OrderServicesImpl implements OrderServices {
         Transport.send(msg);
 
         System.out.println("Email sent");
-//        try {
-//            MimeMessage message = new MimeMessage(session);
-//            message.addRecipient(Message.RecipientType.TO,new InternetAddress(email));
-//            message.setSubject("Order Reciept");
-//            message.setText("Order Details" +order.toString());
-//            //send message
-//            Transport.send(message);
-//            System.out.println("message sent successfully");
-//        } catch (MessagingException e) {throw new RuntimeException(e);}
 
 
+    }
+
+    @Override
+    public List<FindOrdersByMidResponse> findOrdersByMid(String mid) {
+
+        //finding a list of all the orders Placed
+        //TODO: can add a filter based on the date till which the merchant wants to see the orders
+        List<Order> orderList = orderRepository.findAll();
+
+        //List of all the order responses that can be sent
+        List<FindOrdersByMidResponse> response = new ArrayList<>();
+
+        //traversing through the List of orders to see if ANY of the products match the given MID
+
+        Iterator<Order> orderIterator = orderList.iterator();
+        while(orderIterator.hasNext()){
+            Order order = orderIterator.next();
+
+            //checking if the any product of the orderList has the given MID
+            List<CartProduct> cartProducts = order.getItems();
+            //list of all the cartproducts that were from same MID
+            List<CartProduct> list = cartProducts.stream().filter(cartProduct -> {return cartProduct.getMerchantId().equals(mid);}).collect(Collectors.toList());
 
 
+            Iterator<CartProduct> cartProductIterator = list.iterator();
+
+            while(cartProductIterator.hasNext()){
+                CartProduct cartProduct = cartProductIterator.next();
+
+                FindOrdersByMidResponse ordersByMidResponse =new FindOrdersByMidResponse();
+
+                //setting response for the response list object
+                ordersByMidResponse.setImageURL(cartProduct.getImageURL());
+                ordersByMidResponse.setOrderDate(order.getDate());
+                ordersByMidResponse.setPrice(cartProduct.getPrice());
+                ordersByMidResponse.setCustomerId(order.getUserId());
+                ordersByMidResponse.setQuantity(cartProduct.getQuantity());
+                ordersByMidResponse.setProductName(cartProduct.getProductName());
+
+                //adding object to response list
+                response.add(ordersByMidResponse);
+
+            }
+
+        }
+
+
+        return response;
 
     }
 }
