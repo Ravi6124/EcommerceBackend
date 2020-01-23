@@ -55,6 +55,7 @@ public class RepositoryServicesImpl implements RepositoryServices {
                     cartProduct1.setQuantity(cartProduct1.getQuantity() + qty);
 
 
+
                     cartRepository.save(cart);
 
                     flag =1;
@@ -67,6 +68,9 @@ public class RepositoryServicesImpl implements RepositoryServices {
 
         if(flag == 0){
             cart.getItems().add(cartProduct);
+            //updating the price
+            cart.setTotalAmount(cart.getTotalAmount() + cartProduct.getPrice());
+
             cartRepository.save(cart);
         }
 
@@ -83,6 +87,7 @@ public class RepositoryServicesImpl implements RepositoryServices {
         if(cart1.getItems().size() >1) {
             List<CartProduct> list = cart1.getItems();
             Iterator<CartProduct> iterator = list.iterator();
+
             while (iterator.hasNext()) {
                 CartProduct cartProduct = iterator.next();
                 if (itemId.equals(cartProduct.getProductId())) {
@@ -118,8 +123,10 @@ public class RepositoryServicesImpl implements RepositoryServices {
                 if (productId.equals(cartProduct.getProductId())) {
 
                     if (cartProduct.getQuantity() == 1) {
-                        cart1.setItems(new ArrayList<CartProduct>());
                         cart1.setTotalAmount(cart1.getTotalAmount()-cartProduct.getPrice());
+                        list.remove(cartProduct);
+                        break;
+
                     }
 
                     cartProduct.setQuantity(cartProduct.getQuantity() - 1);

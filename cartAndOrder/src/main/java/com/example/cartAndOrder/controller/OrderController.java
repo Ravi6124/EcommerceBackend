@@ -59,5 +59,19 @@ public class OrderController {
     }
 
 
+    @PostMapping("/mail/{email}")
+    boolean mail(@PathVariable (value = "email") String email){
+
+        try{
+            orderServices.mail(email);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        return true;
+    }
+
+
 
 }

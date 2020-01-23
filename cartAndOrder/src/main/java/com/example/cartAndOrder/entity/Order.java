@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+
 @Document(collection = "orders")
 public class Order {
 
@@ -27,4 +28,14 @@ public class Order {
     private List<CartProduct> items;
     private double totalAmount;
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId='" + orderId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", date=" + date +
+                ", items=" + items +
+                ", totalAmount=" + totalAmount +
+                '}';
+    }
 }

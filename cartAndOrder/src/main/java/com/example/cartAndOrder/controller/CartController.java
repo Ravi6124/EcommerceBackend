@@ -19,10 +19,10 @@ public class CartController {
     @Autowired
     CartServices cartServices;
 
-    @GetMapping("/cart")
-    ResponseEntity<Cart> getCart(@Valid @RequestBody GetCartRequest getCartRequest){
+    @GetMapping("/{userId}")
+    ResponseEntity<Cart> getCart(@PathVariable(value = "userId") String userId ){
 
-        String userId = getCartRequest.getUserId();
+
         Cart response = cartServices.getCart(userId);
 
         return new ResponseEntity<Cart>(response,HttpStatus.ACCEPTED);
