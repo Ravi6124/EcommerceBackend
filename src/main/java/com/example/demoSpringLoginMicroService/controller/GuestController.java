@@ -10,10 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -25,12 +22,12 @@ public class GuestController {
     GuestService guestService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> saveGuest(@RequestBody GuestDTO guestDTO) {
+    public ResponseEntity<ApiResponse<String>> saveGuest(@RequestParam String type) {
         Guest guest = new Guest();
-        BeanUtils.copyProperties(guestDTO, guest);
+        guest.setType(type);
         Guest guestCreated = guestService.save(guest);
         if(guestCreated!=null)
-            return new ResponseEntity<>(new ApiResponse<>(1000, "Guest User successfully registered"), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>(guest.getGuestId().toString()), HttpStatus.OK);
         return new ResponseEntity<>(new ApiResponse<>(900, "Guest User not successfully registered"), HttpStatus.OK);
     }
 }

@@ -27,7 +27,7 @@ public class UserController {
         BeanUtils.copyProperties(userDTO, user);
         boolean emailExists=userService.checkEmailExists(user);
         if(emailExists)
-            return new ResponseEntity<>(new ApiResponse<>(900, "Email Address with the specified role already exists"), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>(800, "Email Address with the specified role already exists"), HttpStatus.OK);
         User userCreated = userService.save(user);
         return new ResponseEntity<>(new ApiResponse<>(1000, "User successfully registered"), HttpStatus.OK);
     }

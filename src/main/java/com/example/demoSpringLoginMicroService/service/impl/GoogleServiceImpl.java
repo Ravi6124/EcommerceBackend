@@ -1,6 +1,8 @@
 package com.example.demoSpringLoginMicroService.service.impl;
 
+import com.example.demoSpringLoginMicroService.dto.LoginDTO;
 import com.example.demoSpringLoginMicroService.entity.User;
+import com.example.demoSpringLoginMicroService.repository.UserRepository;
 import com.example.demoSpringLoginMicroService.service.GoogleService;
 import com.example.demoSpringLoginMicroService.service.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -24,45 +26,46 @@ public class GoogleServiceImpl implements GoogleService {
 
 
     @Autowired
-            UserService userService;
+    UserService userService;
 
-            private static final String GOOGLE_APP_CLIENT_ID = "82806335202-ij3bqro9rstgi5ad5el56n5tmrovlaiv.apps.googleusercontent.com";
-            @Value(GOOGLE_APP_CLIENT_ID)
-            private List<String> googleAppClientIdList;
-            private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-            private HttpTransport httpTransport;
+    private static final String GOOGLE_APP_CLIENT_ID = "82806335202-ij3bqro9rstgi5ad5el56n5tmrovlaiv.apps.googleusercontent.com";
+    @Value(GOOGLE_APP_CLIENT_ID)
+    private List<String> googleAppClientIdList;
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private HttpTransport httpTransport;
 
-            @PostConstruct
-            public void init() throws GeneralSecurityException, IOException {
-                httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-            }
+    @PostConstruct
+    public void init() throws GeneralSecurityException, IOException {
+        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    }
 
-            public GoogleIdTokenVerifier getGoogleIdTokenVerifier() {
-                return new GoogleIdTokenVerifier.Builder
-                        (httpTransport, JSON_FACTORY).setAudience(googleAppClientIdList).build();
-            }
+    public GoogleIdTokenVerifier getGoogleIdTokenVerifier() {
+        return new GoogleIdTokenVerifier.Builder
+                (httpTransport, JSON_FACTORY).setAudience(googleAppClientIdList).build();
+    }
 
 
-            @Override
-            public User getGmailDetails(String accessToken) {
-                System.out.println("Inside Gmail Details");
-                User user = new User();
-                try {
+    @Override
+    public User getGmailDetails(LoginDTO loginDTO) {
+        //System.out.println("Inside Gmail Details");
+        User user = new User();
+        try {
 
-                    GoogleIdToken verifyGoogleIdToken = getGoogleIdTokenVerifier().verify(accessToken);
-                    if(verifyGoogleIdToken!=null){
-                System.out.println("Inside verifyGoogleIDToken");
+            GoogleIdToken verifyGoogleIdToken = getGoogleIdTokenVerifier().verify(loginDTO.getAccessToken());
+            if (verifyGoogleIdToken != null) {
+                // System.out.println("Inside verifyGoogleIDToken");
                 user.setEmailAddress(verifyGoogleIdToken.getPayload().getEmail());
-                System.out.println(verifyGoogleIdToken.getPayload().getEmail());
-                userService.save(user);
-            }
-          else
-            {
+                user.setRole(loginDTO.getRole());
+                //System.out.println(verifyGoogleIdToken.getPayload().getEmail();
+                boolean userExists=userService.checkEmailExists(user);
+                if (!userExists)
+                    userService.save(user);
+            } else {
                 System.out.println("Not valid Token");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    return user;
+        return user;
     }
 }

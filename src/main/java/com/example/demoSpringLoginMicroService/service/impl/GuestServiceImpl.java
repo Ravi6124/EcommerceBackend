@@ -14,7 +14,6 @@ public class GuestServiceImpl implements GuestService {
         Guest guestCreate=new Guest();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         guestCreate.setTime(timestamp.toString());
-        guestCreate.setType(guest.getType());
         return guestCreate;
     }
 }

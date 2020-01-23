@@ -1,7 +1,7 @@
 package com.example.demoSpringLoginMicroService.controller;
 
 import com.example.demoSpringLoginMicroService.config.JwtUtil;
-import com.example.demoSpringLoginMicroService.dto.AccessTokenDTO;
+import com.example.demoSpringLoginMicroService.dto.LoginDTO;
 import com.example.demoSpringLoginMicroService.dto.FacebookDTO;
 import com.example.demoSpringLoginMicroService.dto.UserDTO;
 import com.example.demoSpringLoginMicroService.entity.User;
@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/login")
@@ -47,23 +49,25 @@ public class LoginController {
     }
 
     @PostMapping("/googlelogin")
-    public ResponseEntity<ApiResponse<String>> gmailLogin(@RequestBody AccessTokenDTO accessTokenDTO) {
+    public ResponseEntity<ApiResponse<String>> gmailLogin(@RequestBody LoginDTO loginDTO) {
         System.out.println("Inside gmail login");
-            User user=googleService.getGmailDetails(accessTokenDTO.getAccessToken());
+            User user=googleService.getGmailDetails(loginDTO);
             if(user!=null)
-                return new ResponseEntity<>(new ApiResponse<>(accessTokenDTO.getAccessToken()), HttpStatus.OK);
+                return new ResponseEntity<>(new ApiResponse<>(loginDTO.getAccessToken()), HttpStatus.OK);
              else
                 return new ResponseEntity<>(new ApiResponse<>(900,"User Not Found"),HttpStatus.OK);
     }
 
     @PostMapping("/facebooklogin")
-    public ResponseEntity<ApiResponse<String>> facebookLogin(@RequestBody AccessTokenDTO accessTokenDTO) {
+    public ResponseEntity<ApiResponse<String>> facebookLogin(@RequestBody LoginDTO accessTokenDTO) {
 
         FacebookDTO userDTO=(new RestTemplate()).getForObject("https://graph.facebook.com/me?fields=name,id,email,first_name,last_name&access_token=" + accessTokenDTO.getAccessToken(), FacebookDTO.class);
         if(userDTO!=null){
             System.out.println(userDTO.getEmail());
             User user=new User();
             user.setEmailAddress(userDTO.getEmail());
+
+
             userService.save(user);
             return new ResponseEntity<>(new ApiResponse<>(accessTokenDTO.getAccessToken()),HttpStatus.OK);
         }
