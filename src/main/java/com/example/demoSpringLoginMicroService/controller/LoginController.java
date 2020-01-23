@@ -59,17 +59,18 @@ public class LoginController {
     }
 
     @PostMapping("/facebooklogin")
-    public ResponseEntity<ApiResponse<String>> facebookLogin(@RequestBody LoginDTO accessTokenDTO) {
+    public ResponseEntity<ApiResponse<String>> facebookLogin(@RequestBody LoginDTO loginDTO) {
 
-        FacebookDTO userDTO=(new RestTemplate()).getForObject("https://graph.facebook.com/me?fields=name,id,email,first_name,last_name&access_token=" + accessTokenDTO.getAccessToken(), FacebookDTO.class);
+        FacebookDTO userDTO=(new RestTemplate()).getForObject("https://graph.facebook.com/me?fields=name,id,email,first_name,last_name&access_token=" + loginDTO.getAccessToken(), FacebookDTO.class);
         if(userDTO!=null){
             System.out.println(userDTO.getEmail());
             User user=new User();
             user.setEmailAddress(userDTO.getEmail());
-
-
-            userService.save(user);
-            return new ResponseEntity<>(new ApiResponse<>(accessTokenDTO.getAccessToken()),HttpStatus.OK);
+            user.setRole(loginDTO.getRole());
+            boolean userExists=userService.checkEmailExists(user);
+            if(!userExists)
+                userService.save(user);
+            return new ResponseEntity<>(new ApiResponse<>(loginDTO.getAccessToken()),HttpStatus.OK);
         }
 
         else
