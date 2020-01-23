@@ -22,9 +22,9 @@ public class GuestController {
     GuestService guestService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> saveGuest(@RequestParam String type) {
+    public ResponseEntity<ApiResponse<String>> saveGuest(@RequestBody GuestDTO guestDTO) {
         Guest guest = new Guest();
-        guest.setType(type);
+        BeanUtils.copyProperties(guestDTO,guest);
         Guest guestCreated = guestService.save(guest);
         if(guestCreated!=null)
             return new ResponseEntity<>(new ApiResponse<>(guest.getGuestId().toString()), HttpStatus.OK);
