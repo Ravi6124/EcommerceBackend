@@ -5,6 +5,7 @@ import com.example.ProductMicroServices.dto.ProductMerchant;
 import com.example.ProductMicroServices.entity.ProductEntity;
 import com.example.ProductMicroServices.productrepository.ProductRepository;
 import com.example.ProductMicroServices.productservice.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
