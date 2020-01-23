@@ -11,6 +11,7 @@ import com.example.Merchant.MicroService.productClient.ProductStockUpdateClient;
 import com.example.Merchant.MicroService.repository.MerchantRepository;
 import com.example.Merchant.MicroService.repository.ProductListingRepository;
 import com.example.Merchant.MicroService.service.ProductListingService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign;
 import feign.Logger;
 import feign.gson.GsonDecoder;
@@ -20,6 +21,7 @@ import feign.slf4j.Slf4jLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,9 @@ public class ProductListingServiceImpl implements ProductListingService
 
     @Autowired
     MerchantRepository merchantRepository;
+
+    @Autowired
+    private KafkaTemplate<String,String> kafkaTemplate;
 
 
     @Override
@@ -52,8 +57,8 @@ public class ProductListingServiceImpl implements ProductListingService
 
         productListingEntity.setProductId(productDTO.getProductId());
         productListingEntity.setProductName(productDTO.getProductName());
-        productListingEntity.setProductDescription(productDTO.getDescription());
-        productListingEntity.setProductImageURL(productDTO.getImageURL());
+        productListingEntity.setDescription(productDTO.getDescription());
+        productListingEntity.setImageURL(productDTO.getImageURL());
 
         setDefaultMerchantIdAndDefaultPrice(productDTO.getProductId());
 
@@ -66,7 +71,24 @@ public class ProductListingServiceImpl implements ProductListingService
                 .logLevel(Logger.Level.FULL)
                 .target(ProductStockUpdateClient.class, "http://172.16.20.119:8081/product/update");
 
-        productStockUpdateClient.updateStock(productDTO.getProductId(),productListingEntity.getQuantity());
+        productStockUpdateClient.updateStock(productListingEntity.getProductId(),productListingEntity.getQuantity());
+
+        //ProductListingDTO productListingDTO=new ProductListingDTO();
+
+        //kafka part starts
+        ObjectMapper objectMapper=new ObjectMapper();
+        String object_to_string= new String();
+        try{
+            object_to_string=objectMapper.writeValueAsString(productListingEntity);
+            System.out.println(object_to_string);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
+        this.kafkaTemplate.send("productUpdate",object_to_string);
+        //System.out.println(productListingEntity.toString() +" sent to kafka");
+        //kafka part ends
 
 
         return productListingRepository.save(productListingEntity);
@@ -197,6 +219,9 @@ public class ProductListingServiceImpl implements ProductListingService
             getMerchantsbyPidResponse.setCost(productListingEntity.getPrice());
             getMerchantsbyPidResponse.setProductRating(productListingEntity.getProductListingRating());
             getMerchantsbyPidResponse.setProductId(productId);
+            getMerchantsbyPidResponse.setColor(productListingEntity.getColor());
+            getMerchantsbyPidResponse.setSize(productListingEntity.getSize());
+            getMerchantsbyPidResponse.setTheme(productListingEntity.getTheme());
 
             Optional<MerchantEntity> merchantEntity = merchantRepository.findById(productListingEntity.getMerchantId());
             if (merchantEntity.isPresent())
@@ -216,7 +241,7 @@ public class ProductListingServiceImpl implements ProductListingService
             String mid = getMerchantsbyPidResponse.getMerchantId();
             String pid = getMerchantsbyPidResponse.getProductId();
 
-            System.out.println(pid+":"+mid);
+            //System.out.println(pid+":"+mid);
 
             Optional<ProductListingEntity> productListingEntityOptional = productListingRepository.findByProductIdAndMerchantId(pid, mid);
 

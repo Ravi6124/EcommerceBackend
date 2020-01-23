@@ -13,4 +13,7 @@ public class GetMerchantsbyPidResponse
     private double merchantRating;
     private double productRating;
     private double cost;
+    private String color;
+    private String theme;
+    private String size;
 }

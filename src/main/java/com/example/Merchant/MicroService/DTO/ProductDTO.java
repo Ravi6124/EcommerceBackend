@@ -1,11 +1,12 @@
 package com.example.Merchant.MicroService.DTO;
 
 import lombok.Getter;
-        import lombok.Setter;
+import lombok.Setter;
 @Getter
 @Setter
 public class ProductDTO
 {
+    
     private String productId;
     private double defaultPrice;
     private int totalStock;
@@ -14,4 +15,5 @@ public class ProductDTO
     private String description;
     private String imageURL;
     private String defaultMerchantId;
+
 }

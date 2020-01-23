@@ -18,8 +18,8 @@ public class ProductListingEntity
     private String merchantId;
     private String productId;
     private String productName;
-    private String productDescription;
-    private String productImageURL;
+    private String description;
+    private String imageURL;
     private Double price;
     private int quantity;
     private double productListingRating;

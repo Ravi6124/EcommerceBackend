@@ -18,8 +18,8 @@ public class ProductListingDTO
     String merchantId;
     String productId;
     String productName;
-    String productDescription;
-    String productImageURL;
+    String description;
+    String imageURL;
     Double price;
     int quantity;
     double productListingRating;
