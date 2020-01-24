@@ -1,14 +1,16 @@
 package com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges;
 
 
+import com.example.cartAndOrder.exchanges.CartProduct;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
 public class CheckAndUpdateRequest {
 
-    String productId;
-    String merchantId;
-    int quantity;
+    List<CartProduct> cartProducts;
+
 }

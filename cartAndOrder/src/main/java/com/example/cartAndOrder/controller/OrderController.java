@@ -12,6 +12,7 @@ import com.example.cartAndOrder.services.OrderServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
+@EnableAsync
 @RequestMapping("/order")
 public class OrderController {
 
@@ -35,19 +37,14 @@ public class OrderController {
             return new  ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        List<CartProduct> cartProducts = cart.getItems();
-        double totalAmount = cart.getTotalAmount();
-
         Order order = new Order();
 
-        order.setItems(cartProducts);
-        order.setTotalAmount(totalAmount);
-        order.setUserId(userId);
+        order.setItems(cart.getItems());
+        order.setTotalAmount(cart.getTotalAmount());
+        order.setUserId(cart.getCustomerId());
         order.setDate(date);
 
-
-
-        return new ResponseEntity<>(orderServices.checkOut(order),HttpStatus.OK);
+        return new ResponseEntity<>(orderServices.checkOut(order,cart),HttpStatus.OK);
     }
 
     @GetMapping("/getByUserId")
@@ -60,18 +57,21 @@ public class OrderController {
     }
 
 
-    @PostMapping("/mail/{email}")
-    boolean mail(@PathVariable (value = "email") String email){
+    //email checking API
 
-        try{
-            orderServices.mail(email);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-        return true;
-    }
+//
+//    @PostMapping("/mail/{email}")
+//    boolean mail(@PathVariable (value = "email") String email){
+//
+//        try{
+//            orderServices.mail(email);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//
+//        return true;
+//    }
 
     @GetMapping("/getByMerchantId/{mid}")
     ResponseEntity<List<FindOrdersByMidResponse>> findOrdersByMechantId(@PathVariable(value = "mid") String mid){

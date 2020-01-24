@@ -4,25 +4,19 @@ package com.example.cartAndOrder.services;
 import com.example.cartAndOrder.entity.Cart;
 import com.example.cartAndOrder.entity.Order;
 import com.example.cartAndOrder.exchanges.CartProduct;
+import com.example.cartAndOrder.exchanges.KafkaMailObject;
 import com.example.cartAndOrder.exchanges.orderExchanges.CheckOutResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.FindOrdersByMidResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdResponse;
-import com.example.cartAndOrder.exchanges.orderExchanges.UnavailableStock;
 import com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges.CheckAndUpdateRequest;
-import com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges.CheckAndUpdateResponse;
-import com.example.cartAndOrder.feignClient.CustomerClient;
+import com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges.CheckStockResponse;
 import com.example.cartAndOrder.feignClient.MerchantClient;
-import com.example.cartAndOrder.feignClient.ProductClient;
 import com.example.cartAndOrder.repository.CartRepository;
 import com.example.cartAndOrder.repository.OrderRepository;
-import feign.Feign;
-import feign.Logger;
-import feign.gson.GsonDecoder;
-import feign.gson.GsonEncoder;
-import feign.okhttp.OkHttpClient;
-import feign.slf4j.Slf4jLogger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -31,102 +25,79 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@EnableAsync
 public class OrderServicesImpl implements OrderServices {
 
     @Autowired
     OrderRepository orderRepository;
 
     @Autowired
+    KafkaTemplate<String,KafkaMailObject> kafkaTemplate;
+
+    @Autowired
+    MerchantClient merchantClient;
+
+    @Autowired
     CartRepository cartRepository;
     @Override
-    public CheckOutResponse checkOut(Order order) {
+    public CheckOutResponse checkOut(Order order,Cart cart) {
 
         List<CartProduct> cartProducts = order.getItems();
-        Iterator<CartProduct> iterator1 = cartProducts.iterator();
-        Iterator<CartProduct> iterator = cartProducts.iterator();
+
         CheckOutResponse response = new CheckOutResponse();
 
 
-        //TODO: Check and Update the Merchant stock of product if stock not available then return
-        MerchantClient merchantClient = Feign.builder()
-                .client(new OkHttpClient())
-                .encoder(new GsonEncoder())
-                .decoder(new GsonDecoder())
-                .logger(new Slf4jLogger())
-                .logLevel(Logger.Level.FULL)
-                .target(MerchantClient.class, "172.16.20.255:8080/checkStockAndUpdate");
+//        //TODO: Check and Update the Merchant stock of product if stock not available then return
 
         //checking stock for each and every product
-        int flag = 0;
-        while (iterator.hasNext()){
-            CartProduct cartProduct = iterator.next();
-            CheckAndUpdateRequest checkAndUpdateRequest= new CheckAndUpdateRequest();
 
-            //Setting the params for the request
-            checkAndUpdateRequest.setMerchantId(cartProduct.getMerchantId());
-            checkAndUpdateRequest.setProductId(cartProduct.getProductId());
-            checkAndUpdateRequest.setQuantity(cartProduct.getQuantity());
+        CheckAndUpdateRequest checkAndUpdateRequest= new CheckAndUpdateRequest();
+        checkAndUpdateRequest.setCartProducts(cartProducts);
 
-            CheckAndUpdateResponse checkAndUpdateResponse = merchantClient.checkProductStockAndUpdate(checkAndUpdateRequest);
+        CheckStockResponse checkStockResponse = merchantClient.checkProductStock(checkAndUpdateRequest);
 
-            //Adding to list of unavailable products if stock does not match
-            if(!checkAndUpdateResponse.isStatus()){
-                response.setStatus(false);
-                response.getUnavailableStock().add(new UnavailableStock(cartProduct.getProductName(),cartProduct.getQuantity()));
-                flag = 1;
+        if(!checkStockResponse.isStatus()){
+            response.setStatus(checkStockResponse.isStatus());
+            response.setUnavailableStock(checkStockResponse.getList());
 
-            }
+            return response;
         }
 
-        if(flag == 1){
-            return  response;
-        }
+        //updating everyStock
+
+
+        merchantClient.updateStock(checkAndUpdateRequest);
+
 
 
         //Adding to the orderRepository
         Order order1 = orderRepository.save(order);
         response.setOrderId(order1.getOrderId());
         response.setStatus(true);
+//
+//        clearing the cart
+//        Optional<Cart> cart1 = cartRepository.findById(order1.getUserId());
+//        if(cart1.isPresent()){
+//            cartRepository.delete(cart1.get());
+//        }
+//
+        cartRepository.delete(cart);
 
-        //clearing the cart
-        Optional<Cart> cart = cartRepository.findById(order1.getUserId());
-        if(cart.isPresent()){
-            cartRepository.delete(cart.get());
-        }
-
-        // Updating the Product Stock
-        ProductClient productClient = Feign.builder()
-                .client(new OkHttpClient())
-                .encoder(new GsonEncoder())
-                .decoder(new GsonDecoder())
-                .logger(new Slf4jLogger(ProductClient.class))
-                .logLevel(Logger.Level.FULL)
-                .target(ProductClient.class, "http://172.16.20.119:8081/product/update");
-
-        while (iterator1.hasNext()){
-            CartProduct cartProduct = iterator1.next();
-
-            productClient.updateStock(cartProduct.getProductId(),-cartProduct.getQuantity());
-        }
+//
 
 
 
 
         //TODO: Send Email
-        CustomerClient customerClient = Feign.builder()
-                .client(new OkHttpClient())
-                .encoder(new GsonEncoder())
-                .decoder(new GsonDecoder())
-                .logger(new Slf4jLogger(CustomerClient.class))
-                .logLevel(Logger.Level.FULL)
-                .target(CustomerClient.class, "http://172.16.20.119:8080/customer/email");
+//       String message = "<h1>Your order details are </h1> <br> \n" + order.toString();
+//        try{
+//            mail("antassinha@gmail.com",message);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
 
-        String email = customerClient.getEmail(order.getUserId());
-        try{
-            mail(email);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        System.out.println("OrderPlaced");
 
 
 
@@ -146,7 +117,8 @@ public class OrderServicesImpl implements OrderServices {
     }
 
     @Override
-    public void mail(String email) throws MessagingException {
+    @Async
+    public void mail(String email,String message) throws MessagingException {
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -172,8 +144,8 @@ public class OrderServicesImpl implements OrderServices {
         MimeBodyPart messageBodyPart = new MimeBodyPart();
 
         String emailMessage;
-        emailMessage= "MAil sent";
-        messageBodyPart.setContent(emailMessage, "text/html");
+        //emailMessage= "MAil sent";
+        messageBodyPart.setContent(message, "text/html");
 
 
         Multipart multipart = new MimeMultipart();
@@ -235,4 +207,25 @@ public class OrderServicesImpl implements OrderServices {
         return response;
 
     }
+
+//    public void send(String email,String message){
+//        KafkaMailObject kafkaMailObject = new KafkaMailObject();
+//        kafkaMailObject.setEmail(email);
+//        kafkaMailObject.setMessage(message);
+//
+//        kafkaTemplate.send(email,kafkaMailObject);
+//
+//
+//    }
+//
+//    @KafkaListener(topics = "email")
+//    public void listen(KafkaMailObject kafkaMailObject){
+//
+//        try{
+//            mail(kafkaMailObject.getEmail(),kafkaMailObject.getMessage());
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//    }
 }
