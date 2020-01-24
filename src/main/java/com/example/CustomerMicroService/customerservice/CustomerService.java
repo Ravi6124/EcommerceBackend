@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface CustomerService {
    CustomerEntity addCustomer(CustomerEntity customerEntity);
    Optional<CustomerEntity> getCustomer(String customerId);
-   CustomerEntity updateCustomer(CustomerEntity customerEntity);
 }

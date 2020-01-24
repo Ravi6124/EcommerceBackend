@@ -25,10 +25,4 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findById(customerId);
     }
 
-    @Override
-    public CustomerEntity updateCustomer(CustomerEntity customerEntity) {
-        Optional<CustomerEntity> customer = customerRepository.findById(customerEntity.getCustomerId());
-        customerRepository.deleteById(customerEntity.getCustomerId());
-        return addCustomer(customerEntity);
-    }
 }

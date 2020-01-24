@@ -39,14 +39,6 @@ public class CustomerController {
         }
     }
 
-    @PostMapping("update")
-    public ResponseEntity<String> updateCustomer(@RequestBody CustomerDto customerDto){
-        CustomerEntity customerEntity = new CustomerEntity();
-        BeanUtils.copyProperties(customerDto,customerEntity);
-        CustomerEntity customerCreated = customerService.updateCustomer(customerEntity);
-        return new ResponseEntity<String>(customerCreated.getCustomerId(),HttpStatus.CREATED);
-    }
-
     @GetMapping("email/{id}")
     public String getEmail(@PathVariable("id") String customerId){
         Optional<CustomerEntity> customerEntity = customerService.getCustomer(customerId);
