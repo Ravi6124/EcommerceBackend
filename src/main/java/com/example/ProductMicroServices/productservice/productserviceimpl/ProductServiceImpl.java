@@ -62,14 +62,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<String> isProductPresent(String productName) {
         String returnValue = "#";
-        List<ProductEntity> allProducts = productRepository.findAll();
-        Iterator<ProductEntity> iterator=  allProducts.iterator();
-        while(iterator.hasNext()){
-            ProductEntity productEntity = iterator.next();
-            if(productName.equals(productEntity.getProductName()))
-            returnValue = productEntity.getProductId();
+        Optional<ProductEntity> productEntity = productRepository.findByProductName(productName);
+        if(productEntity.isPresent()){
+          return  new ResponseEntity<String>(productEntity.get().getProductId(),HttpStatus.CREATED);
         }
-        return  new ResponseEntity<String>(returnValue,HttpStatus.CREATED);
+        else {
+          return  new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        }
+
+//        List<ProductEntity> allProducts = productRepository.findAll();
+//        Iterator<ProductEntity> iterator=  allProducts.iterator();
+//        while(iterator.hasNext()){
+//            ProductEntity productEntity = iterator.next();
+//            if(productName.equals(productEntity.getProductName()))
+//            returnValue = productEntity.getProductId();
+//        }
+//        return  new ResponseEntity<String>(returnValue,HttpStatus.CREATED);
     }
 
     @Override
@@ -78,9 +86,8 @@ public class ProductServiceImpl implements ProductService {
         Optional<ProductEntity> productEntity = productRepository.findById(productId);
         if(productEntity.isPresent()) {
             ProductEntity productEntityCopy = productEntity.get();
-            productRepository.delete(productEntity.get());
             productEntity.get().setTotalStock(productEntityCopy.getTotalStock() + stockOffset);
-            productRepository.insert(productEntityCopy);
+            productRepository.save(productEntityCopy);
         }
     }
 
@@ -93,8 +100,7 @@ public class ProductServiceImpl implements ProductService {
             BeanUtils.copyProperties(product,productEntity);
             productEntity.setDefaultMerchantId(merchnatId);
             productEntity.setDefaultPrice(price);
-            productRepository.delete(productEntity);
-            productRepository.insert(productEntity);
+            productRepository.save(productEntity);
             return new ResponseEntity<String>(HttpStatus.OK);
         }
         else {
