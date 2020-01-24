@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 @RestController
 @RequestMapping("product")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProductMicroServiceController {
 
     @Autowired
