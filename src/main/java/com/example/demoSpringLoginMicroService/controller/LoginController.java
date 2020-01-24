@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/login")
 public class LoginController {
 
@@ -37,13 +38,11 @@ public class LoginController {
         BeanUtils.copyProperties(userDTO, user);
         user = userService.findUser(user);
         if (null != user) {
-            if(user.getPassword().equals(userDTO.getPassword()))
-            {
+            if (user.getPassword().equals(userDTO.getPassword())) {
                 String accessToken = jwtUtil.generateToken(user);
-                return new ResponseEntity<>(new ApiResponse<>(accessToken), HttpStatus.OK);
-            }
-            else
-                return new ResponseEntity<>(new ApiResponse<>(900,"Password is not correct"), HttpStatus.OK);
+                return new ResponseEntity<>(new ApiResponse<>("User ID : " + user.getUserId() + ", Access Token :  " + accessToken), HttpStatus.OK);
+            } else
+                return new ResponseEntity<>(new ApiResponse<>(900, "Password is not correct"), HttpStatus.OK);
         }
         return new ResponseEntity<>(new ApiResponse<>(900, "Invalid Credentials"), HttpStatus.OK);
     }
@@ -51,29 +50,29 @@ public class LoginController {
     @PostMapping("/googlelogin")
     public ResponseEntity<ApiResponse<String>> gmailLogin(@RequestBody LoginDTO loginDTO) {
         System.out.println("Inside gmail login");
-            User user=googleService.getGmailDetails(loginDTO);
-            if(user!=null)
-                return new ResponseEntity<>(new ApiResponse<>(loginDTO.getAccessToken()), HttpStatus.OK);
-             else
-                return new ResponseEntity<>(new ApiResponse<>(900,"User Not Found"),HttpStatus.OK);
+        User user = googleService.getGmailDetails(loginDTO);
+        if (user != null)
+            return new ResponseEntity<>(new ApiResponse<>(loginDTO.getAccessToken()), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(new ApiResponse<>(900, "User Not Found"), HttpStatus.OK);
     }
 
     @PostMapping("/facebooklogin")
     public ResponseEntity<ApiResponse<String>> facebookLogin(@RequestBody LoginDTO loginDTO) {
 
-        FacebookDTO userDTO=(new RestTemplate()).getForObject("https://graph.facebook.com/me?fields=name,id,email,first_name,last_name&access_token=" + loginDTO.getAccessToken(), FacebookDTO.class);
-        if(userDTO!=null){
+        FacebookDTO userDTO = (new RestTemplate()).getForObject("https://graph.facebook.com/me?fields=name,id,email,first_name,last_name&access_token=" + loginDTO.getAccessToken(), FacebookDTO.class);
+        if (userDTO != null) {
             System.out.println(userDTO.getEmail());
-            User user=new User();
+            User user = new User();
             user.setEmailAddress(userDTO.getEmail());
             user.setRole(loginDTO.getRole());
-            boolean userExists=userService.checkEmailExists(user);
-            if(!userExists)
+            boolean userExists = userService.checkEmailExists(user.getEmailAddress(), user.getRole());
+            if (!userExists) {
                 userService.save(user);
-            return new ResponseEntity<>(new ApiResponse<>(loginDTO.getAccessToken()),HttpStatus.OK);
-        }
 
-        else
-            return new ResponseEntity<>(new ApiResponse<>(900,"User Not Found"),HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new ApiResponse<>(loginDTO.getAccessToken()), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new ApiResponse<>(900, "User Not Found"), HttpStatus.OK);
     }
 }

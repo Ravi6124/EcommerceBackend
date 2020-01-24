@@ -57,7 +57,7 @@ public class GoogleServiceImpl implements GoogleService {
                 user.setEmailAddress(verifyGoogleIdToken.getPayload().getEmail());
                 user.setRole(loginDTO.getRole());
                 //System.out.println(verifyGoogleIdToken.getPayload().getEmail();
-                boolean userExists=userService.checkEmailExists(user);
+                boolean userExists=userService.checkEmailExists(user.getEmailAddress(),user.getRole());
                 if (!userExists)
                     userService.save(user);
             } else {

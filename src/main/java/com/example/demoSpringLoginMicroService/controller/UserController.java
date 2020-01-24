@@ -9,12 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/customer")
 public class UserController {
 
@@ -25,10 +23,15 @@ public class UserController {
     public ResponseEntity<ApiResponse<String>> saveUser(@RequestBody UserDTO userDTO) {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
-        boolean emailExists=userService.checkEmailExists(user);
-        if(emailExists)
+        boolean emailExists = userService.checkEmailExists(userDTO.getEmailAddress(), userDTO.getRole());
+        System.out.println("status :" + emailExists);
+        if (emailExists) {
             return new ResponseEntity<>(new ApiResponse<>(800, "Email Address with the specified role already exists"), HttpStatus.OK);
-        User userCreated = userService.save(user);
-        return new ResponseEntity<>(new ApiResponse<>(1000, "User successfully registered"), HttpStatus.OK);
+        } else {
+            User userCreated = userService.save(user);
+            return new ResponseEntity<>(new ApiResponse<>(1000, "User successfully registered"), HttpStatus.OK);
+
+        }
+
     }
 }

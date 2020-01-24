@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/guest")
 public class GuestController {
 
@@ -22,12 +23,13 @@ public class GuestController {
     GuestService guestService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> saveGuest(@RequestBody GuestDTO guestDTO) {
+    public ResponseEntity<ApiResponse<String>> saveGuest(@RequestParam String type) {
         Guest guest = new Guest();
-        BeanUtils.copyProperties(guestDTO,guest);
+        guest.setType(type);
         Guest guestCreated = guestService.save(guest);
+        String guestId=String.valueOf(guestCreated.getGuestId());
         if(guestCreated!=null)
-            return new ResponseEntity<>(new ApiResponse<>(guest.getGuestId().toString()), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>(guestId),HttpStatus.OK);
         return new ResponseEntity<>(new ApiResponse<>(900, "Guest User not successfully registered"), HttpStatus.OK);
     }
 }

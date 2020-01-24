@@ -23,24 +23,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUser(User user) {
-        Optional<User> userExists=userRepository.findByEmailAddress(user.getEmailAddress());
-        if(userExists.isPresent()) {
-            String userPasswordExists=String.valueOf(userExists.get().getPassword());
-            String userPassword=String.valueOf(user.getPassword());
+        Optional<User> userExists = userRepository.findByEmailAddress(user.getEmailAddress());
+        if (userExists.isPresent()) {
+            String userPasswordExists = String.valueOf(userExists.get().getPassword());
+            String userPassword = String.valueOf(user.getPassword());
             return userExists.get();
-        }
-        else
+        } else
             return null;
     }
 
     @Override
-    public boolean checkEmailExists(User user) {
-        Optional<User> userEmailExists=userRepository.findByEmailAddress(user.getEmailAddress());
-        Optional<User> userRoleExists=userRepository.findByRole(user.getRole());
-        if(userEmailExists.isPresent() && userRoleExists.isPresent())
-            return true;
-        else
-            return false;
+    public boolean checkEmailExists(String emailAddress, String role) {
+        Optional<User> userEmailExists = userRepository.findByEmailAddressAndRole(emailAddress,role);
+        if (userEmailExists.isPresent()) {
+                return true;
+        }
+        return false;
 
     }
 }
