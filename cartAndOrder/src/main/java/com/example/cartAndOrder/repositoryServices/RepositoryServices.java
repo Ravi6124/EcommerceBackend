@@ -1,8 +1,7 @@
 package com.example.cartAndOrder.repositoryServices;
 
 import com.example.cartAndOrder.entity.Cart;
-import com.example.cartAndOrder.exchanges.CartProduct;
-import org.springframework.stereotype.Service;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartProduct;
 
 
 public interface RepositoryServices {

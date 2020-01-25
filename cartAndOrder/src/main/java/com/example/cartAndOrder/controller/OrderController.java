@@ -3,7 +3,6 @@ package com.example.cartAndOrder.controller;
 
 import com.example.cartAndOrder.entity.Cart;
 import com.example.cartAndOrder.entity.Order;
-import com.example.cartAndOrder.exchanges.CartProduct;
 import com.example.cartAndOrder.exchanges.orderExchanges.CheckOutResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.FindOrdersByMidResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdRequest;

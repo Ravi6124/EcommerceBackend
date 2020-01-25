@@ -1,4 +1,4 @@
-package com.example.cartAndOrder.exchanges;
+package com.example.cartAndOrder.exchanges.cartExchanges;
 
 
 import lombok.AllArgsConstructor;
@@ -10,13 +10,13 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class RemoveItemFromCartRequest {
+@NoArgsConstructor
+public class SwapCartRequest {
 
     @NotNull
     String userId;
 
     @NotNull
-    String productId;
+    String guestId;
 }

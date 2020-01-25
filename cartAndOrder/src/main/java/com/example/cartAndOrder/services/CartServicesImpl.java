@@ -1,20 +1,26 @@
 package com.example.cartAndOrder.services;
 
 import com.example.cartAndOrder.entity.Cart;
-import com.example.cartAndOrder.exchanges.CartModifiedResponse;
-import com.example.cartAndOrder.exchanges.CartProduct;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartModifiedResponse;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartProduct;
+import com.example.cartAndOrder.repository.CartRepository;
 import com.example.cartAndOrder.repositoryServices.RepositoryServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartServicesImpl implements CartServices {
 
     @Autowired
     RepositoryServices repositoryServices;
+
+    @Autowired
+    CartRepository cartRepository;
 
 
     @Override
@@ -79,6 +85,54 @@ public class CartServicesImpl implements CartServices {
         response.setResultCode(100);
 
         return  response;
+    }
+
+    @Override
+    public Boolean swapCarts(String userId, String guestId) {
+
+        Cart userCart = repositoryServices.findOrCreateCart(userId);
+
+        Cart guestCart = repositoryServices.findOrCreateCart(guestId);
+
+        if(guestCart.getItems().size() >0){
+            List<CartProduct> cartProducts  = guestCart.getItems();
+
+            Iterator<CartProduct> iterator = cartProducts.iterator();
+
+            while(iterator.hasNext()){
+                CartProduct cartProduct = iterator.next();
+                Iterator<CartProduct> userCartIterator = userCart.getItems().iterator();
+
+                int flag =0;
+                while(userCartIterator.hasNext()){
+                    CartProduct userProduct = userCartIterator.next();
+
+                    if(cartProduct.getProductId().equals(userProduct.getProductId()) && cartProduct.getMerchantId().equals(userProduct.getMerchantId())){
+                        userProduct.setQuantity(userProduct.getQuantity() + cartProduct.getQuantity());
+                        flag =1;
+                        break;
+                    }
+                }
+
+                if(flag == 0){
+                    userCart.getItems().add(cartProduct);
+                }
+
+
+            }
+
+            cartRepository.save(userCart);
+            cartRepository.delete(guestCart);
+
+            return true;
+        }
+
+        else if(guestCart.getItems().size() == 0){
+            cartRepository.delete(guestCart);
+        }
+
+
+        return true;
     }
 
 

@@ -1,7 +1,7 @@
 package com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges;
 
 
-import com.example.cartAndOrder.exchanges.CartProduct;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartProduct;
 import lombok.Getter;
 import lombok.Setter;
 

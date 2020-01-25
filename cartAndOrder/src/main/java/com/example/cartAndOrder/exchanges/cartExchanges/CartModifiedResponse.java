@@ -1,4 +1,4 @@
-package com.example.cartAndOrder.exchanges;
+package com.example.cartAndOrder.exchanges.cartExchanges;
 
 import com.example.cartAndOrder.entity.Cart;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package com.example.cartAndOrder.services;
 
 import com.example.cartAndOrder.entity.Cart;
-import com.example.cartAndOrder.exchanges.CartModifiedResponse;
-import com.example.cartAndOrder.exchanges.CartProduct;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartModifiedResponse;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartProduct;
 
 public interface CartServices {
 
@@ -13,5 +13,7 @@ public interface CartServices {
      CartModifiedResponse removeItemFromCart(String userId, String itemId);
 
      CartModifiedResponse reduceItemFromCart(String userId, String productId);
+
+     Boolean swapCarts(String userId, String guestId);
 
 }

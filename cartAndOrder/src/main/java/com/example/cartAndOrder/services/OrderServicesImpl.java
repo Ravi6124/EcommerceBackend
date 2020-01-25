@@ -3,8 +3,8 @@ package com.example.cartAndOrder.services;
 
 import com.example.cartAndOrder.entity.Cart;
 import com.example.cartAndOrder.entity.Order;
-import com.example.cartAndOrder.exchanges.CartProduct;
-import com.example.cartAndOrder.exchanges.KafkaMailObject;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartProduct;
+import com.example.cartAndOrder.exchanges.cartExchanges.KafkaMailObject;
 import com.example.cartAndOrder.exchanges.orderExchanges.CheckOutResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.FindOrdersByMidResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdResponse;
@@ -89,13 +89,13 @@ public class OrderServicesImpl implements OrderServices {
 
 
         //TODO: Send Email
-//       String message = "<h1>Your order details are </h1> <br> \n" + order.toString();
-//        try{
-//            mail("antassinha@gmail.com",message);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//
+       String message = "<h1>Your order details are </h1> <br> \n" + order.toString();
+        try{
+            mail("antassinha@gmail.com",message);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         System.out.println("OrderPlaced");
 

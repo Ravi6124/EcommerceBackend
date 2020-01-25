@@ -1,10 +1,8 @@
 package com.example.cartAndOrder.entity;
 
 
-import com.example.cartAndOrder.exchanges.CartProduct;
-import jdk.nashorn.internal.objects.annotations.Getter;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartProduct;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

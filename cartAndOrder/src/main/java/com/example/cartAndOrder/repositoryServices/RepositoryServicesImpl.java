@@ -1,7 +1,7 @@
 package com.example.cartAndOrder.repositoryServices;
 
 import com.example.cartAndOrder.entity.Cart;
-import com.example.cartAndOrder.exchanges.CartProduct;
+import com.example.cartAndOrder.exchanges.cartExchanges.CartProduct;
 import com.example.cartAndOrder.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

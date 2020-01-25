@@ -2,7 +2,7 @@ package com.example.cartAndOrder.controller;
 
 
 import com.example.cartAndOrder.entity.Cart;
-import com.example.cartAndOrder.exchanges.*;
+import com.example.cartAndOrder.exchanges.cartExchanges.*;
 import com.example.cartAndOrder.services.CartServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -68,6 +68,15 @@ public class CartController {
 
 
         return new ResponseEntity<>(cartServices.reduceItemFromCart(userId,productId),HttpStatus.OK);
+    }
+
+    @PutMapping("/swapcarts")
+    ResponseEntity<Boolean> swapCarts(@Valid @RequestBody SwapCartRequest swapCartRequest){
+
+        String userId = swapCartRequest.getUserId();
+        String guestId = swapCartRequest.getGuestId();
+
+        return new ResponseEntity<>(cartServices.swapCarts(userId,guestId),HttpStatus.OK);
     }
 
 
