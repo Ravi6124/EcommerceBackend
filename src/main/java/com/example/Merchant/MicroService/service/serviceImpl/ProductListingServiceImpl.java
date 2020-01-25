@@ -49,13 +49,31 @@ public class ProductListingServiceImpl implements ProductListingService
     public ProductListingEntity save(ProductListingEntity productListingEntity)
     {
 
+        ProductClient productClient = Feign.builder()
+                .client(new OkHttpClient())
+                .encoder(new GsonEncoder())
+                .decoder(new GsonDecoder())
+                .logger(new Slf4jLogger(ProductClient.class))
+                .logLevel(Logger.Level.FULL)
+                .target(ProductClient.class, "http://172.16.20.119:8085/product");
+
+        ProductDTO productDTO = productClient.getProductByProductId(productListingEntity.getProductId());
+
+        productListingEntity.setProductId(productDTO.getProductId());
+        productListingEntity.setProductName(productDTO.getProductName());
+        productListingEntity.setDescription(productDTO.getDescription());
+        productListingEntity.setImageURL(productDTO.getImageURL());
+
+        setDefaultMerchantIdAndDefaultPrice(productDTO.getProductId());
+
+
         ProductStockUpdateClient productStockUpdateClient = Feign.builder()
                 .client(new OkHttpClient())
                 .encoder(new GsonEncoder())
                 .decoder(new GsonDecoder())
                 .logger(new Slf4jLogger(ProductStockUpdateClient.class))
                 .logLevel(Logger.Level.FULL)
-                .target(ProductStockUpdateClient.class, "http://172.16.20.119:8081/product/update");
+                .target(ProductStockUpdateClient.class, "http://172.16.20.119:8085/product/update");
 
         productStockUpdateClient.updateStock(productListingEntity.getProductId(),productListingEntity.getQuantity());
 
@@ -177,7 +195,7 @@ public class ProductListingServiceImpl implements ProductListingService
                 .decoder(new GsonDecoder())
                 .logger(new Slf4jLogger(ProductStockUpdateClient.class))
                 .logLevel(Logger.Level.FULL)
-                .target(ProductStockUpdateClient.class,"http://172.16.20.119:8081/product/update");
+                .target(ProductStockUpdateClient.class,"http://172.16.20.119:8085/product/update");
 
         while (iterator1.hasNext()){
             CartProduct cartProduct = iterator1.next();
@@ -210,7 +228,7 @@ public class ProductListingServiceImpl implements ProductListingService
                     .decoder(new GsonDecoder())
                     .logger(new Slf4jLogger(ProductStockUpdateClient.class))
                     .logLevel(Logger.Level.FULL)
-                    .target(ProductStockUpdateClient.class, "http://172.16.20.119:8081/product/update");
+                    .target(ProductStockUpdateClient.class, "http://172.16.20.119:8085/product/update");
 
             productStockUpdateClient.updateStock(productListingEntity.get().getProductId(),offset);
 
@@ -293,7 +311,7 @@ public class ProductListingServiceImpl implements ProductListingService
                     .decoder(new GsonDecoder())
                     .logger(new Slf4jLogger(ProductClient.class))
                     .logLevel(Logger.Level.FULL)
-                    .target(ProductClient.class, "http://172.16.20.119:8081/product");
+                    .target(ProductClient.class, "http://172.16.20.119:8085/product");
 
             ProductDTO productDTO = productClient.getProductByProductId(pid);
             double productStock = productDTO.getTotalStock() * 0.1;
@@ -345,7 +363,7 @@ public class ProductListingServiceImpl implements ProductListingService
                 .decoder(new GsonDecoder())
                 .logger(new Slf4jLogger(ProductSaveClient.class))
                 .logLevel(Logger.Level.FULL)
-                .target(ProductSaveClient.class, "http://172.16.20.119:8081/product/updateproduct");
+                .target(ProductSaveClient.class, "http://172.16.20.119:8085/product/updateproduct");
         productClient.updateMerchantPrice(listOfMerchants.get(0).getProductId(),listOfMerchants.get(0).getMerchantId(),listOfMerchants.get(0).getCost());
     }
 }
