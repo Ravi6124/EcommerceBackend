@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Table(name = "CUSTOMER")
 @Getter
 @Setter
-@ToString
 public class User {
 
     @Id
@@ -21,4 +20,14 @@ public class User {
     private String emailAddress;
     private String password;
     private String role;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }

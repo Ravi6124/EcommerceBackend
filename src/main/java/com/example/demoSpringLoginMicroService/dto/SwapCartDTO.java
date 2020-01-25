@@ -5,10 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDTO {
-    private int userId;
-    private String emailAddress;
-    private String password;
-    private String role;
+public class SwapCartDTO {
+    private String userId;
     private String guestId;
 }

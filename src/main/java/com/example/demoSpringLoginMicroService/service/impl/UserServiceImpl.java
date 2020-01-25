@@ -1,5 +1,6 @@
 package com.example.demoSpringLoginMicroService.service.impl;
 
+import com.example.demoSpringLoginMicroService.config.bcrypt.BCryptPasswordEncoder;
 import com.example.demoSpringLoginMicroService.dto.UserDTO;
 import com.example.demoSpringLoginMicroService.entity.User;
 import com.example.demoSpringLoginMicroService.repository.UserRepository;
@@ -16,6 +17,9 @@ public class UserServiceImpl implements UserService {
     private
     UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Override
     public User save(User user) {
         return userRepository.save(user);
@@ -23,7 +27,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUser(User user) {
-        Optional<User> userExists = userRepository.findByEmailAddress(user.getEmailAddress());
+        Optional<User> userExists = userRepository.findByEmailAddressAndRole(user.getEmailAddress(),user.getRole());
+
         if (userExists.isPresent()) {
             String userPasswordExists = String.valueOf(userExists.get().getPassword());
             String userPassword = String.valueOf(user.getPassword());

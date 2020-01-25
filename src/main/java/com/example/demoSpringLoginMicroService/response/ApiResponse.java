@@ -8,19 +8,27 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ApiResponse<T> {
+public class ApiResponse {
     private int statusCode;
     private String message;
-    private T data;
+    private String accessToken;
+    private String userId;
+    private String guestId;
+    private String emailAddress;
 
-    public ApiResponse(int statusCode, String messagen) {
+    public ApiResponse(int statusCode, String accessToken, String userId, String emailAddress) {
         this.statusCode = statusCode;
-        this.message = messagen;
+        this.accessToken = accessToken;
+        this.userId = userId;
+        this.emailAddress = emailAddress;
     }
 
-    public ApiResponse(T data) {
-        this.statusCode = 1000;
-        this.message = "SUCCESS";
-        this.data = data;
+    public ApiResponse(int statusCode, String message) {
+        this.statusCode = statusCode;
+        this.message = message;
+    }
+
+    public ApiResponse(String guestId) {
+        this.guestId = guestId;
     }
 }
