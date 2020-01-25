@@ -51,9 +51,9 @@ public class SearchServiceImplementation implements SearchServices
 
 
     @Override
-    public Page<SearchEntity> search(String keyword)
+    public Page<SearchEntity> search(int pageSize,int pageNumber,String keyword)
     {
-        return searchRepoCustom.search(keyword);
+        return searchRepoCustom.search(pageSize,pageNumber,keyword);
     }
 
 }

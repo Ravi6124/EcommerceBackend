@@ -6,6 +6,6 @@ import org.springframework.data.domain.Page;
 public interface SearchServices
 {
     void consume(String message);
-    Page<SearchEntity> search(String keyword);
+    Page<SearchEntity> search( int pageSize, int pageNumber,String keyword);
 
 }

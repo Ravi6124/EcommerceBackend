@@ -5,6 +5,7 @@ import com.example.Search.MicroService.repository.SearchRepoCustom;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.Query;
@@ -21,7 +22,7 @@ public class SearchRepoImpl implements SearchRepoCustom
     private SolrTemplate solrTemplate;
 
     @Override
-    public Page<SearchEntity> search(String keyword)
+    public Page<SearchEntity> search(int pageSize,int pageNumber,String keyword)
     {
 
         String[] split = keyword.split("\\s+");
@@ -33,6 +34,8 @@ public class SearchRepoImpl implements SearchRepoCustom
                     .or(new Criteria("color").boost(7).is(word))
                     .or(new Criteria("size").boost(8).is(word)));
         }
+        query.setPageRequest(PageRequest.of(pageNumber, pageSize));
+       // query.setRows(pageSize);
 //        System.out.println(query.getCriteria());
 
 //        query.addCriteria(Criteria.where("description").is(keyword));

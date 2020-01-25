@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 public interface SearchRepoCustom
 {
-    public Page<SearchEntity> search(String keyword);
+    public Page<SearchEntity> search(int pageSize, int pageNumber,String keyword);
 }
