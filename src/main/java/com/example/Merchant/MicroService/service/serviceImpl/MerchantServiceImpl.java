@@ -2,6 +2,7 @@ package com.example.Merchant.MicroService.service.serviceImpl;
 
 import com.example.Merchant.MicroService.DTO.MerchantDTO;
 import com.example.Merchant.MicroService.Entity.MerchantEntity;
+import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import com.example.Merchant.MicroService.repository.MerchantRepository;
 import com.example.Merchant.MicroService.service.MerchantService;
 import com.example.Merchant.MicroService.service.ProductListingService;
@@ -128,5 +129,11 @@ public class MerchantServiceImpl implements MerchantService
         {
             return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public ResponseEntity<List<ProductListingEntity>> displayMerchantProducts(String merchantId)
+    {
+        return productListingService.displayMerchantsProducts(merchantId);
     }
 }

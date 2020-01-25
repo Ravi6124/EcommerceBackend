@@ -63,7 +63,11 @@ public class MerchantController
         return merchantService.getTotalProductSold(merchantId);
     }
 
-
+    @GetMapping(value="/displayMerchantProducts/{merchantId}")
+    public ResponseEntity<ProductListingEntity> displayMerchantProducts(@PathVariable("merchantId")String merchantId)
+    {
+        return merchantService.displayMerchantProducts(merchantId);
+    }
 
 
 }

@@ -30,4 +30,5 @@ public interface ProductListingService
 
     void setDefaultMerchantIdAndDefaultPrice(String productId);
 
+   ResponseEntity<List<ProductListingEntity>> displayMerchantsProducts(String merchantId);
 }

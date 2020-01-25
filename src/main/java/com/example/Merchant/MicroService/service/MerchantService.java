@@ -21,4 +21,5 @@ public interface MerchantService
 
     ResponseEntity<Integer> getTotalProductSold(String merchantId);
 
+    ResponseEntity<List<ProductListingEntity>> displayMerchantProducts(String merchantId);
 }

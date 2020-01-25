@@ -40,11 +40,14 @@ public class ProductListingServiceImpl implements ProductListingService
 
 
     @Override
+    public ResponseEntity<List<ProductListingEntity>> displayMerchantsProducts(String merchantId)
+    {
+        return new ResponseEntity<List<ProductListingEntity>>(productListingRepository.findByMerchantId(merchantId),HttpStatus.OK);
+    }
+
+    @Override
     public ProductListingEntity save(ProductListingEntity productListingEntity)
     {
-
-
-
 
         ProductStockUpdateClient productStockUpdateClient = Feign.builder()
                 .client(new OkHttpClient())
@@ -142,6 +145,8 @@ public class ProductListingServiceImpl implements ProductListingService
             return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
         }
     }
+
+
 
     @Override
     @Transactional

@@ -3,14 +3,11 @@ package com.example.Merchant.MicroService.Controller;
 import com.example.Merchant.MicroService.DTO.*;
 import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import com.example.Merchant.MicroService.service.ProductListingService;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController

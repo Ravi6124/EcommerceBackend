@@ -12,7 +12,7 @@ public class MerchantDTO
     private String firstName;
     private String lastName;
     private String contactNumber;
-    private String password;
+    //private String password;
     private String city;
     private String imageURL;
     private double merchantRating;
