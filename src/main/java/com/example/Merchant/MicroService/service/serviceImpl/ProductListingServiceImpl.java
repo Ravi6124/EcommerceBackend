@@ -1,8 +1,6 @@
 package com.example.Merchant.MicroService.service.serviceImpl;
 
-import com.example.Merchant.MicroService.DTO.CheckStockAndUpdateResponse;
-import com.example.Merchant.MicroService.DTO.GetMerchantsbyPidResponse;
-import com.example.Merchant.MicroService.DTO.ProductDTO;
+import com.example.Merchant.MicroService.DTO.*;
 import com.example.Merchant.MicroService.Entity.MerchantEntity;
 import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import com.example.Merchant.MicroService.productClient.ProductClient;
@@ -45,22 +43,7 @@ public class ProductListingServiceImpl implements ProductListingService
     public ProductListingEntity save(ProductListingEntity productListingEntity)
     {
 
-        ProductClient productClient = Feign.builder()
-                .client(new OkHttpClient())
-                .encoder(new GsonEncoder())
-                .decoder(new GsonDecoder())
-                .logger(new Slf4jLogger(ProductClient.class))
-                .logLevel(Logger.Level.FULL)
-                .target(ProductClient.class, "http://172.16.20.119:8081/product");
 
-        ProductDTO productDTO = productClient.getProductByProductId(productListingEntity.getProductId());
-
-        productListingEntity.setProductId(productDTO.getProductId());
-        productListingEntity.setProductName(productDTO.getProductName());
-        productListingEntity.setDescription(productDTO.getDescription());
-        productListingEntity.setImageURL(productDTO.getImageURL());
-
-        setDefaultMerchantIdAndDefaultPrice(productDTO.getProductId());
 
 
         ProductStockUpdateClient productStockUpdateClient = Feign.builder()
@@ -110,45 +93,40 @@ public class ProductListingServiceImpl implements ProductListingService
 
     @Override
     @Transactional
-    public CheckStockAndUpdateResponse checkProductStockAndUpdate(String productId, String merchantId, int requiredQuantity)
-    {
+    public CheckStockResponse checkProductStock(List<CartProduct> cartProducts){
 
-        Optional<ProductListingEntity> productListingEntity = productListingRepository.findByProductIdAndMerchantId(productId, merchantId);
-        CheckStockAndUpdateResponse response = new CheckStockAndUpdateResponse();
+        CheckStockResponse checkStockResponse = new CheckStockResponse();
+        Iterator<CartProduct> iterator = cartProducts.iterator();
+        List<UnavailableStock> unavailableStocks = new ArrayList<>();
 
-        if (productListingEntity.isPresent())
-        {
-            if (productListingEntity.get().getQuantity() < requiredQuantity)
-            {
+        //Getting product listing for each product in the listing table
+        int flag = 0;
+        while (iterator.hasNext()){
+            CartProduct cartProduct = iterator.next();
+            Optional<ProductListingEntity> productListingEntity = productListingRepository.findByProductIdAndMerchantId(
+                    cartProduct.getProductId(),cartProduct.getMerchantId());
 
-                response.setStatus(false);
-                response.setQuantity(productListingEntity.get().getQuantity());
+            if(productListingEntity.get().getQuantity() < cartProduct.getQuantity()){
+                flag = 1;
+                unavailableStocks.add(new UnavailableStock(cartProduct.getProductName(),productListingEntity.get().getQuantity()));
 
-                return response;
             }
-
-            int quantity = productListingEntity.get().getQuantity() - requiredQuantity;
-            productListingEntity.get().setQuantity(quantity);
-//                productListingRepository.deleteById(productListingId);
-            productListingRepository.save(productListingEntity.get());
-            response.setStatus(true);
-            response.setQuantity(quantity);
-
-            ProductStockUpdateClient productStockUpdateClient = Feign.builder()
-                    .client(new OkHttpClient())
-                    .encoder(new GsonEncoder())
-                    .decoder(new GsonDecoder())
-                    .logger(new Slf4jLogger(ProductStockUpdateClient.class))
-                    .logLevel(Logger.Level.FULL)
-                    .target(ProductStockUpdateClient.class, "http://172.16.20.119:8081/product/update");
-
-            productStockUpdateClient.updateStock(productId,(-1*requiredQuantity));
-
-            return response;
         }
 
-        return response;
+        if(flag == 1){
+            checkStockResponse.setStatus(false);
+            checkStockResponse.setUnavailableStock(unavailableStocks);
+        }
+
+        if(flag == 0){
+            checkStockResponse.setStatus(true);
+            checkStockResponse.setUnavailableStock(unavailableStocks);
+
+        }
+
+        return checkStockResponse;
     }
+
 
     @Override
     public ResponseEntity<Integer> getStock(String productListingId)
@@ -163,6 +141,45 @@ public class ProductListingServiceImpl implements ProductListingService
             {
             return new ResponseEntity<Integer>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateStock(List<CartProduct> cartProducts) {
+
+        Iterator<CartProduct> iterator = cartProducts.iterator();
+        Iterator<CartProduct> iterator1 = cartProducts.iterator();
+
+        while (iterator.hasNext()){
+            CartProduct cartProduct = iterator.next();
+
+            Optional<ProductListingEntity> productListingEntity = productListingRepository.findByProductIdAndMerchantId(cartProduct.getProductId(),cartProduct.getMerchantId());
+            System.out.println(productListingEntity.get().getQuantity());
+
+            //Assuming ki listing exists tabhi order kar paa rha
+            ProductListingEntity productListingEntity1 = productListingEntity.get();
+
+            productListingEntity1.setQuantity(productListingEntity1.getQuantity() - cartProduct.getQuantity());
+
+           // productListingRepository.deleteById(productListingEntity.get().getProductListingId());
+            productListingRepository.save(productListingEntity1);
+        }
+
+        // Updating the Product Stock
+        ProductStockUpdateClient productStockUpdateClient = Feign.builder()
+                .client(new OkHttpClient())
+                .encoder(new GsonEncoder())
+                .decoder(new GsonDecoder())
+                .logger(new Slf4jLogger(ProductStockUpdateClient.class))
+                .logLevel(Logger.Level.FULL)
+                .target(ProductStockUpdateClient.class,"http://172.16.20.119:8081/product/update");
+
+        while (iterator1.hasNext()){
+            CartProduct cartProduct = iterator1.next();
+            productStockUpdateClient.updateStock(cartProduct.getProductId(),-cartProduct.getQuantity());
+        }
+
+
     }
 
     @Override

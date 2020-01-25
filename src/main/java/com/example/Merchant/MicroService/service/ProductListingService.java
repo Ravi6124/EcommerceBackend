@@ -1,6 +1,8 @@
 package com.example.Merchant.MicroService.service;
 
-import com.example.Merchant.MicroService.DTO.CheckStockAndUpdateResponse;
+import com.example.Merchant.MicroService.DTO.CartProduct;
+import com.example.Merchant.MicroService.DTO.CheckStockAndUpdateRequest;
+import com.example.Merchant.MicroService.DTO.CheckStockResponse;
 import com.example.Merchant.MicroService.DTO.GetMerchantsbyPidResponse;
 import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,13 @@ public interface ProductListingService
 
     List<GetMerchantsbyPidResponse> findMerchantsbyPid(String productId);
 
-    CheckStockAndUpdateResponse checkProductStockAndUpdate(String productId, String merchantId, int requiredQuantity);
+    CheckStockResponse checkProductStock(List<CartProduct> cartProducts);
 
     ResponseEntity<String> increaseProductStock(String productListId, int offset);
 
     ResponseEntity<Integer> getStock(String productListingId);
+
+    void updateStock( List<CartProduct> cartProducts);
 
     void setDefaultMerchantIdAndDefaultPrice(String productId);
 

@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RequestMapping("/merchant")
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MerchantController
 {
 

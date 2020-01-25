@@ -2,6 +2,7 @@ package com.example.Merchant.MicroService.Entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(value="PRODUCTLISTING")
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 public class ProductListingEntity
 {
+    @Id
     private String productListingId;
 
     private String color;

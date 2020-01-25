@@ -1,18 +1,19 @@
 package com.example.Merchant.MicroService.DTO;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class CheckStockAndUpdateRequest {
+@NoArgsConstructor
+public class UnavailableStock {
 
-    List<CartProduct> cartProducts;
+    String productName;
+    int stock;
+
 
 }

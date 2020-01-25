@@ -1,11 +1,9 @@
 package com.example.Merchant.MicroService.Controller;
 
-import com.example.Merchant.MicroService.DTO.CheckStockAndUpdateRequest;
-import com.example.Merchant.MicroService.DTO.CheckStockAndUpdateResponse;
-import com.example.Merchant.MicroService.DTO.GetMerchantsbyPidResponse;
-import com.example.Merchant.MicroService.DTO.ProductListingDTO;
+import com.example.Merchant.MicroService.DTO.*;
 import com.example.Merchant.MicroService.Entity.ProductListingEntity;
 import com.example.Merchant.MicroService.service.ProductListingService;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +15,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("productListingController")
+
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProductListingController
 {
     @Autowired
@@ -51,15 +51,25 @@ public class ProductListingController
         return  new ResponseEntity<List<GetMerchantsbyPidResponse>>(productListingService.findMerchantsbyPid(productId),HttpStatus.OK);
     }
 
-    @PutMapping(value="/checkStockAndUpdate/{productListId}/{requiredQuantity}")
-    public ResponseEntity<CheckStockAndUpdateResponse> checkProductStockAndUpdate(@Valid @RequestBody CheckStockAndUpdateRequest checkStockAndUpdateRequest)
-    {
-        String productId = checkStockAndUpdateRequest.getProductId();
-        String merChantId = checkStockAndUpdateRequest.getMerchantId();
-        int quantity = checkStockAndUpdateRequest.getQuantity();
+    @PostMapping(value = "/checkstock")
+    public CheckStockResponse checkStock(@RequestBody CheckStockAndUpdateRequest checkStockAndUpdateRequest){
 
-        CheckStockAndUpdateResponse response = productListingService.checkProductStockAndUpdate(productId,merChantId,quantity);
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        List<CartProduct> cartProducts = checkStockAndUpdateRequest.getCartProducts();
+
+        return productListingService.checkProductStock(cartProducts);
+
+    }
+
+    @PutMapping(value = "/updatestock")
+    public ResponseEntity<Boolean> updateStock(@RequestBody CheckStockAndUpdateRequest checkStockAndUpdateRequest){
+        List<CartProduct> cartProducts = checkStockAndUpdateRequest.getCartProducts();
+
+        if(cartProducts.size() == 0){
+            return new ResponseEntity<>(false,HttpStatus.BAD_REQUEST);
+        }
+
+        productListingService.updateStock(cartProducts);
+        return new ResponseEntity<>(true,HttpStatus.OK);
     }
 
     @PutMapping(value="/increaseProductStock/{productListId}/{offset}")
