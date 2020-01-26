@@ -35,9 +35,9 @@ public class UserController {
         CustomerDto customerDto=new CustomerDto();
         MerchantDTO merchantDTO=new MerchantDTO();
         BeanUtils.copyProperties(userDTO, user);
-        boolean emailExists = userService.checkEmailExists(userDTO.getEmailAddress(), userDTO.getRole());
+        User emailExists = userService.checkEmailExists(userDTO.getEmailAddress(), userDTO.getRole());
         //System.out.println("status :" + emailExists);
-        if (emailExists) {
+        if (emailExists!=null) {
             return new ResponseEntity<>(new ApiResponse(800,"User already exists"), HttpStatus.OK);
         } else {
             User userCreated = userService.save(user);

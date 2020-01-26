@@ -49,7 +49,9 @@ public class GoogleServiceImpl implements GoogleService {
     public User getGmailDetails(LoginDTO loginDTO) {
         //System.out.println("Inside Gmail Details");
         User user = new User();
+        User userExists=new User();
         try {
+
 
             GoogleIdToken verifyGoogleIdToken = getGoogleIdTokenVerifier().verify(loginDTO.getAccessToken());
             if (verifyGoogleIdToken != null) {
@@ -57,8 +59,8 @@ public class GoogleServiceImpl implements GoogleService {
                 user.setEmailAddress(verifyGoogleIdToken.getPayload().getEmail());
                 user.setRole(loginDTO.getRole());
                 //System.out.println(verifyGoogleIdToken.getPayload().getEmail();
-                boolean userExists=userService.checkEmailExists(user.getEmailAddress(),user.getRole());
-                if (!userExists) {
+                userExists=userService.checkEmailExists(user.getEmailAddress(),user.getRole());
+                if (userExists==null) {
                     user = userService.save(user);
                     System.out.println(user.toString());
                     return  user;
@@ -70,6 +72,6 @@ public class GoogleServiceImpl implements GoogleService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return user;
+        return userExists;
     }
 }

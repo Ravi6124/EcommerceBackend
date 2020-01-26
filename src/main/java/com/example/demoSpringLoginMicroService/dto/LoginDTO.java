@@ -9,4 +9,6 @@ public class LoginDTO {
     private String accessToken;
     private String role;
     private String guestId;
+    private String loginSource;
+    private String type;
 }

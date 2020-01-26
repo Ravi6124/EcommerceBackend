@@ -38,12 +38,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkEmailExists(String emailAddress, String role) {
+    public User checkEmailExists(String emailAddress, String role) {
         Optional<User> userEmailExists = userRepository.findByEmailAddressAndRole(emailAddress,role);
         if (userEmailExists.isPresent()) {
-                return true;
+                return userEmailExists.get();
         }
-        return false;
-
+        return null;
     }
 }
