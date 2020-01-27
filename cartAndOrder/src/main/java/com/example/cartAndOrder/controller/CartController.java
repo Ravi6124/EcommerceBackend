@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/cart")
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 public class CartController {
 
     @Autowired
@@ -59,7 +60,7 @@ public class CartController {
 
     }
 
-    @DeleteMapping("/reduceitem")
+    @PostMapping("/reduceitem")
     ResponseEntity<CartModifiedResponse> reduceItemFromCart(@Valid @RequestBody ReduceItemFromCartRequest reduceItemFromCartRequest){
 
         String userId = reduceItemFromCartRequest.getUserId();

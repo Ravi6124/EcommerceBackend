@@ -10,10 +10,12 @@ import com.example.cartAndOrder.exchanges.orderExchanges.FindOrdersByMidResponse
 import com.example.cartAndOrder.exchanges.orderExchanges.GetOrdersByUserIdResponse;
 import com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges.CheckAndUpdateRequest;
 import com.example.cartAndOrder.exchanges.orderExchanges.merchantExchanges.CheckStockResponse;
+import com.example.cartAndOrder.feignClient.LoginClient;
 import com.example.cartAndOrder.feignClient.MerchantClient;
 import com.example.cartAndOrder.repository.CartRepository;
 import com.example.cartAndOrder.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -32,10 +34,13 @@ public class OrderServicesImpl implements OrderServices {
     OrderRepository orderRepository;
 
     @Autowired
-    KafkaTemplate<String,KafkaMailObject> kafkaTemplate;
+    KafkaTemplate<String,String> kafkaTemplate;
 
     @Autowired
     MerchantClient merchantClient;
+
+    @Autowired
+    LoginClient loginClient;
 
     @Autowired
     CartRepository cartRepository;
@@ -47,7 +52,7 @@ public class OrderServicesImpl implements OrderServices {
         CheckOutResponse response = new CheckOutResponse();
 
 
-//        //TODO: Check and Update the Merchant stock of product if stock not available then return
+        //Check and Update the Merchant stock of product if stock not available then return
 
         //checking stock for each and every product
 
@@ -74,13 +79,7 @@ public class OrderServicesImpl implements OrderServices {
         Order order1 = orderRepository.save(order);
         response.setOrderId(order1.getOrderId());
         response.setStatus(true);
-//
-//        clearing the cart
-//        Optional<Cart> cart1 = cartRepository.findById(order1.getUserId());
-//        if(cart1.isPresent()){
-//            cartRepository.delete(cart1.get());
-//        }
-//
+
         cartRepository.delete(cart);
 
 //
@@ -88,20 +87,32 @@ public class OrderServicesImpl implements OrderServices {
 
 
 
-        //TODO: Send Email
-       String message = "<h1>Your order details are </h1> <br> \n" + order.toString();
-        try{
-            mail("antassinha@gmail.com",message);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        //TODO: Send Email
+       String message =  "<h1 align = 'center'>Congratulations your order is placed.Order details are </h1> <br>" ;
+       message = message + "<h3>OrderId</h3> :" + response.getOrderId() + "<br>";
+       message = message + "<h3>Total Amount</h3> :" + order1.getTotalAmount() + "<br>";
+
+       Iterator<CartProduct> iterator = order1.getItems().iterator();
+
+       while(iterator.hasNext()){
+           CartProduct cartProduct = iterator.next();
+           message = message + "<h3>item name</h3> : " + cartProduct.getProductName() ;
+       }
+
+       String email = loginClient.getEmailById(order1.getUserId());
 
 
-        System.out.println("OrderPlaced");
 
 
 
-        return response ;
+       send(email+","+message);
+
+
+       System.out.println("OrderPlaced");
+
+
+
+       return response ;
 
 
     }
@@ -208,24 +219,30 @@ public class OrderServicesImpl implements OrderServices {
 
     }
 
-//    public void send(String email,String message){
-//        KafkaMailObject kafkaMailObject = new KafkaMailObject();
-//        kafkaMailObject.setEmail(email);
-//        kafkaMailObject.setMessage(message);
-//
-//        kafkaTemplate.send(email,kafkaMailObject);
-//
-//
-//    }
-//
-//    @KafkaListener(topics = "email")
-//    public void listen(KafkaMailObject kafkaMailObject){
-//
-//        try{
-//            mail(kafkaMailObject.getEmail(),kafkaMailObject.getMessage());
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//
-//    }
+
+    public void send(String message){
+
+        kafkaTemplate.send("email",message);
+
+
+    }
+
+    @KafkaListener(topics = "email",groupId = "group-id")
+    public void listen(String message){
+        System.out.println(message);
+
+
+        String []arrString = message.split(",");
+
+        System.out.println(arrString[0]+" "+arrString[1]);
+
+
+        try{
+            mail(arrString[0],arrString[1]);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 }

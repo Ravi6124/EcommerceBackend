@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @EnableAsync
 @RequestMapping("/order")
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 public class OrderController {
 
     @Autowired
@@ -47,9 +48,9 @@ public class OrderController {
     }
 
     @GetMapping("/getByUserId")
-    ResponseEntity<GetOrdersByUserIdResponse> getOrdersByUserId(@Valid @RequestBody GetOrdersByUserIdRequest getOrdersByUserIdRequest){
+    ResponseEntity<GetOrdersByUserIdResponse> getOrdersByUserId(@RequestParam String userId){
 
-        String userId = getOrdersByUserIdRequest.getUserId();
+        //String userId = getOrdersByUserIdRequest.getUserId();
 
         return new ResponseEntity<>(orderServices.findOrdersByUserId(userId),HttpStatus.OK);
 
