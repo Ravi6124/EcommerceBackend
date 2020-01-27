@@ -46,8 +46,8 @@ public class LoginController {
     @Autowired
     AddToCartOrderClient addToCartOrderClient;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    //@Autowired
+    //PasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtUtil jwtUtil;

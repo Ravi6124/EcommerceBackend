@@ -19,8 +19,8 @@ public class UserServiceImpl implements UserService {
     private
     UserRepository userRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+  //  @Autowired
+   // PasswordEncoder passwordEncoder;
 
     @Override
     public User save(User user) {
@@ -49,8 +49,8 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
+    //@Bean
+    //public PasswordEncoder encoder() {
+      //  return new BCryptPasswordEncoder();
+    //}
 }
