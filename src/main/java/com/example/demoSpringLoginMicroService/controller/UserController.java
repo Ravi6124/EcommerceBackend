@@ -1,5 +1,6 @@
 package com.example.demoSpringLoginMicroService.controller;
 
+import com.example.demoSpringLoginMicroService.config.bcrypt.BCryptPasswordEncoder;
 import com.example.demoSpringLoginMicroService.dto.CustomerDto;
 import com.example.demoSpringLoginMicroService.dto.MerchantDTO;
 import com.example.demoSpringLoginMicroService.dto.UserDTO;
@@ -28,6 +29,9 @@ public class UserController {
 
     @Autowired
     MerchantClient merchantClient;
+
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping
     public ResponseEntity<ApiResponse> saveUser(@RequestBody UserDTO userDTO) {

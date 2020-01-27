@@ -6,6 +6,8 @@ import com.example.demoSpringLoginMicroService.entity.User;
 import com.example.demoSpringLoginMicroService.repository.UserRepository;
 import com.example.demoSpringLoginMicroService.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,10 +20,11 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    PasswordEncoder passwordEncoder;
 
     @Override
     public User save(User user) {
+        //user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -44,5 +47,10 @@ public class UserServiceImpl implements UserService {
                 return userEmailExists.get();
         }
         return null;
+    }
+
+    @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
     }
 }

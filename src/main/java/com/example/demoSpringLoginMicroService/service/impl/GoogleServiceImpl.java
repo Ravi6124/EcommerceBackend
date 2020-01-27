@@ -52,6 +52,7 @@ public class GoogleServiceImpl implements GoogleService {
         User userExists=new User();
         try {
 
+            System.out.println(loginDTO.getAccessToken());
 
             GoogleIdToken verifyGoogleIdToken = getGoogleIdTokenVerifier().verify(loginDTO.getAccessToken());
             if (verifyGoogleIdToken != null) {
@@ -68,6 +69,7 @@ public class GoogleServiceImpl implements GoogleService {
 
             } else {
                 System.out.println("Not valid Token");
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();

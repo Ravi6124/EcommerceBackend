@@ -20,9 +20,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +47,7 @@ public class LoginController {
     AddToCartOrderClient addToCartOrderClient;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -54,14 +56,16 @@ public class LoginController {
     LoginHistoryService loginHistoryService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse> userLogin(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<ApiResponse> userLogin(@Valid @RequestBody UserDTO userDTO) {
 
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
         user = userService.checkEmailExists(user.getEmailAddress(),user.getRole());
+       // System.out.println(passwordEncoder.encode(user.getPassword()));
+        //  System.out.println(passwordEncoder.encode(userDTO.getPassword()));
 
         if (null != user) {
-            if (user.getPassword().equals(userDTO.getPassword())) {
+            if (user.getPassword().equals(userDTO.getPassword())){
 
                 String accessToken = jwtUtil.generateToken(user);
                 SwapCartDTO swapCartDTO=new SwapCartDTO();
@@ -123,6 +127,7 @@ public class LoginController {
                 LoginHistory loginHistory=loginHistoryService.setLoginHistory(loginDTO);
                 loginHistory.setUserId(user.getUserId());
                 loginHistoryService.save(loginHistory);
+                return new ResponseEntity<>(new ApiResponse(1000,loginDTO.getAccessToken(),String.valueOf(user.getUserId()),user.getEmailAddress()), HttpStatus.OK);
             }
             else
             {
@@ -133,8 +138,9 @@ public class LoginController {
                 LoginHistory loginHistory=loginHistoryService.setLoginHistory(loginDTO);
                 loginHistory.setUserId(userExists.getUserId());
                 loginHistoryService.save(loginHistory);
+                return new ResponseEntity<>(new ApiResponse(1000,loginDTO.getAccessToken(),String.valueOf(userExists.getUserId()),userExists.getEmailAddress()), HttpStatus.OK);
             }
-            return new ResponseEntity<>(new ApiResponse(1000,loginDTO.getAccessToken(),String.valueOf(user.getUserId()),user.getEmailAddress()), HttpStatus.OK);
+
         }
         return new ResponseEntity<>(new ApiResponse(800, "User Not Found"), HttpStatus.OK);
     }
