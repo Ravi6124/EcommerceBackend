@@ -60,14 +60,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<String> isProductPresent(String productName) {
-        String returnValue = "#";
+    public String isProductPresent(String productName) {
         Optional<ProductEntity> productEntity = productRepository.findByProductName(productName);
         if(productEntity.isPresent()){
-          return  new ResponseEntity<String>(productEntity.get().getProductId(),HttpStatus.CREATED);
+          return  productEntity.get().getProductId();
         }
         else {
-          return  new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+          return  "#";
         }
 
 //        List<ProductEntity> allProducts = productRepository.findAll();

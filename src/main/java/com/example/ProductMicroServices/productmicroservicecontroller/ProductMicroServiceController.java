@@ -79,7 +79,7 @@ public class ProductMicroServiceController {
     }
 
     @GetMapping("present/{productName}")
-    ResponseEntity<String> isProductPresent(@PathVariable("productName") String productName){
+   String isProductPresent(@PathVariable("productName") String productName){
         return productService.isProductPresent(productName.toLowerCase());
     }
 

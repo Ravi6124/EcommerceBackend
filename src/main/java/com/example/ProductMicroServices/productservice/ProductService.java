@@ -12,7 +12,7 @@ public interface ProductService {
     ProductEntity addProduct(ProductEntity productEntity);
     Page<ProductEntity> getProductsByCategoryId(String categoryId, int page, int size);
     Optional<ProductDto> getProductByProductId(String productId);
-    ResponseEntity<String> isProductPresent(String productName);
+    String isProductPresent(String productName);
     void updateStock(String productId,int stockOffset);
     ResponseEntity<String> updateMerchantPrice(String productId,String merchnatId,double price);
 }
