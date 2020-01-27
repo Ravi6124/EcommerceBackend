@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("customer")
+
 public class CustomerController {
 
     @Autowired
