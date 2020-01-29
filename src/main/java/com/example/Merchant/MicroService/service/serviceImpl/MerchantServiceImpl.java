@@ -26,6 +26,8 @@ public class MerchantServiceImpl implements MerchantService
     @Autowired
     private ProductListingService productListingService;
 
+    MerchantDTO merchantDTO=new MerchantDTO();
+
     @Override
     @Transactional
     public ResponseEntity<String> updateTotalProductSold(String merchantId, int quantity)
@@ -135,5 +137,18 @@ public class MerchantServiceImpl implements MerchantService
     public ResponseEntity<List<ProductListingEntity>> displayMerchantProducts(String merchantId)
     {
         return productListingService.displayMerchantsProducts(merchantId);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> updateMerchant(MerchantDTO merchantDTO)
+    {
+        Optional<MerchantEntity> merchantEntity=merchantRepository.findById(merchantDTO.getMerchantId());
+        if(merchantEntity.isPresent())
+        {
+            BeanUtils.copyProperties(merchantDTO,merchantEntity);
+            merchantRepository.save(merchantEntity.get());
+            return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+        }
+        return new ResponseEntity<HttpStatus>(HttpStatus.BAD_REQUEST);
     }
 }

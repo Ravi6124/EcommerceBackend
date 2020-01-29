@@ -2,6 +2,7 @@ package com.example.Merchant.MicroService.service;
 import com.example.Merchant.MicroService.DTO.MerchantDTO;
 import com.example.Merchant.MicroService.Entity.MerchantEntity;
 import com.example.Merchant.MicroService.Entity.ProductListingEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface MerchantService
     ResponseEntity<Integer> getTotalProductSold(String merchantId);
 
     ResponseEntity<List<ProductListingEntity>> displayMerchantProducts(String merchantId);
+
+    ResponseEntity<HttpStatus> updateMerchant(MerchantDTO merchantDTO);
 }

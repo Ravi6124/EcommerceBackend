@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(value="PRODUCTLISTING")
 @Getter
 @Setter
-public class ProductListingEntity
+public class  ProductListingEntity
 {
     @Id
     private String productListingId;
@@ -17,6 +17,7 @@ public class ProductListingEntity
     private String size;
     private String theme;
 
+    private String categoryId;
     private String merchantId;
     private String productId;
     private String productName;

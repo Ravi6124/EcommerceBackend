@@ -29,17 +29,17 @@ public class ProductListingController
         return new ResponseEntity<String>(productListCreated.getProductListingId(),HttpStatus.CREATED);
     }
 
-    @GetMapping(value="/getProductListingRating/{productListingId}")
-    public ResponseEntity<Double> getProductListingRating(@PathVariable("productListingId") String productListingId)
+    @GetMapping(value="/getProductListingRating/{productId}/{merchantId}")
+    public ResponseEntity<Double> getProductListingRating(@PathVariable("productId") String productId,@PathVariable("merchantId")String merchantId)
     {
-        return productListingService.getProductListingRating(productListingId);
+        return productListingService.getProductListingRating(productId,merchantId);
 
     }
 
-    @PutMapping(value="/updateProductListingRating/{productListingId}/{currentRating}")
-    public ResponseEntity<String> updateProductListingRating(@PathVariable("productListingId") String productListingId,@PathVariable("currentRating") double currentRating)
+    @PutMapping(value="/updateProductListingRating/{productId}/{merchantId}/{currentRating}")
+    public ResponseEntity<String> updateProductListingRating(@PathVariable("productId") String productId,@PathVariable("merchantId")String merchantId,@PathVariable("currentRating") double currentRating)
     {
-        return productListingService.updateProductListingRating(currentRating,productListingId);
+        return productListingService.updateProductListingRating(currentRating,productId,merchantId);
     }
 
     @GetMapping(value="/getMerchantByProductId/{productId}")
@@ -69,10 +69,10 @@ public class ProductListingController
         return new ResponseEntity<>(true,HttpStatus.OK);
     }
 
-    @PutMapping(value="/increaseProductStock/{productListId}/{offset}")
-    public ResponseEntity<String> increaseProductStock(@PathVariable("productListId") String productListId,@PathVariable("offset") int offset)
+    @PostMapping(value="/increaseProductStock/{productName}/{merchantId}/{offset}")
+    public ResponseEntity<String> increaseProductStock(@PathVariable("productName") String productName,@PathVariable("merchantId") String merchantId,@PathVariable("offset") int offset)
     {
-        return productListingService.increaseProductStock(productListId,offset);
+        return productListingService.increaseProductStock(productName,merchantId,offset);
     }
 
     @GetMapping(value="/getStock/{productListingId}")
@@ -81,6 +81,11 @@ public class ProductListingController
         return productListingService.getStock(productListingId);
     }
 
+    @GetMapping(value="/getSearchProductExtraDetails/{merchantId}/{productId}")
+    public GetSearchProductExtraDetailsResponse getSearchProductExtraDetails(@PathVariable("merchantId") String merchantId, @PathVariable("productId") String productId)
+    {
+        return productListingService.getSearchProductExtraDetails(merchantId,productId);
+    }
 
 
 

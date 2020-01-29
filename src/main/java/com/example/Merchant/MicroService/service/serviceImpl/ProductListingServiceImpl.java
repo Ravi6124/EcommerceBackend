@@ -63,7 +63,10 @@ public class ProductListingServiceImpl implements ProductListingService
         productListingEntity.setProductName(productDTO.getProductName());
         productListingEntity.setDescription(productDTO.getDescription());
         productListingEntity.setImageURL(productDTO.getImageURL());
+        productListingEntity.setCategoryId(productDTO.getCategoryId());
+        String productListingId = productListingRepository.save(productListingEntity).getProductListingId();
 
+        productListingEntity.setProductListingId(productListingId);
         setDefaultMerchantIdAndDefaultPrice(productDTO.getProductId());
 
 
@@ -95,13 +98,13 @@ public class ProductListingServiceImpl implements ProductListingService
         //kafka part ends
 
 
-        return productListingRepository.save(productListingEntity);
+        return productListingEntity;
     }
 
     @Override
-    public ResponseEntity<Double> getProductListingRating(String productListingId)
+    public ResponseEntity<Double> getProductListingRating(String productId,String merchantId)
     {
-        Optional<ProductListingEntity> productListingEntity = productListingRepository.findById(productListingId);
+        Optional<ProductListingEntity> productListingEntity = productListingRepository.findByProductIdAndMerchantId(productId,merchantId);
         if (productListingEntity.isPresent())
         {
             return new ResponseEntity<Double>(productListingEntity.get().getProductListingRating(), HttpStatus.OK);
@@ -122,6 +125,7 @@ public class ProductListingServiceImpl implements ProductListingService
 
         //Getting product listing for each product in the listing table
         int flag = 0;
+
         while (iterator.hasNext()){
             CartProduct cartProduct = iterator.next();
             Optional<ProductListingEntity> productListingEntity = productListingRepository.findByProductIdAndMerchantId(
@@ -129,7 +133,10 @@ public class ProductListingServiceImpl implements ProductListingService
 
             if(productListingEntity.get().getQuantity() < cartProduct.getQuantity()){
                 flag = 1;
-                unavailableStocks.add(new UnavailableStock(cartProduct.getProductName(),productListingEntity.get().getQuantity()));
+                UnavailableStock unavailableStock = new UnavailableStock();
+                unavailableStock.setProductName(productListingEntity.get().getProductName());
+                unavailableStock.setStock(productListingEntity.get().getQuantity());
+                unavailableStocks.add(unavailableStock);
 
             }
         }
@@ -168,7 +175,8 @@ public class ProductListingServiceImpl implements ProductListingService
 
     @Override
     @Transactional
-    public void updateStock(List<CartProduct> cartProducts) {
+    public void updateStock(List<CartProduct> cartProducts)
+    {
 
         Iterator<CartProduct> iterator = cartProducts.iterator();
         Iterator<CartProduct> iterator1 = cartProducts.iterator();
@@ -207,18 +215,20 @@ public class ProductListingServiceImpl implements ProductListingService
 
     @Override
     @Transactional
-    public ResponseEntity<String> increaseProductStock(String productListingId, int offset)
+    public ResponseEntity<String> increaseProductStock(String productName,String merchantId, int offset)
     {
-        Optional<ProductListingEntity> productListingEntity = productListingRepository.findById(productListingId);
 
-        if (productListingEntity.isPresent())
-        {
-            productListingEntity.get().setQuantity(productListingEntity.get().getQuantity() + offset);
-            productListingRepository.deleteById(productListingId);
-            productListingRepository.save(productListingEntity.get());
+        productName.toLowerCase();
+
+        ProductListingEntity productListingEntity = productListingRepository.findByProductNameAndMerchantId(productName,merchantId);
+
+
+            productListingEntity.setQuantity(productListingEntity.getQuantity() + offset);
+            //productListingRepository.deleteById(productListingId);
+            productListingRepository.save(productListingEntity);
 
             //updates default price and mId
-            setDefaultMerchantIdAndDefaultPrice(productListingEntity.get().getProductId());
+            setDefaultMerchantIdAndDefaultPrice(productListingEntity.getProductId());
 
 
 
@@ -230,13 +240,11 @@ public class ProductListingServiceImpl implements ProductListingService
                     .logLevel(Logger.Level.FULL)
                     .target(ProductStockUpdateClient.class, "http://172.16.20.119:8085/product/update");
 
-            productStockUpdateClient.updateStock(productListingEntity.get().getProductId(),offset);
+            productStockUpdateClient.updateStock(productListingEntity.getProductId(),offset);
 
 
             return new ResponseEntity<String>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
+
     }
 
     @Override
@@ -330,14 +338,14 @@ public class ProductListingServiceImpl implements ProductListingService
 
     @Override
     @Transactional
-    public ResponseEntity<String> updateProductListingRating(double currentRating, String productListingId) {
-        Optional<ProductListingEntity> productListingEntity = productListingRepository.findById(productListingId);
+    public ResponseEntity<String> updateProductListingRating(double currentRating, String productId,String merchantId) {
+        Optional<ProductListingEntity> productListingEntity = productListingRepository.findByProductIdAndMerchantId(productId,merchantId);
         if (productListingEntity.isPresent()) {
             double productListingRating = productListingEntity.get().getProductListingRating();
             int numberOfRatings = productListingEntity.get().getNumberOfRatings();
             double newRating = (productListingRating * numberOfRatings) / (numberOfRatings + 1);
             productListingEntity.get().setProductListingRating(newRating);
-            productListingRepository.deleteById(productListingId);
+            //productListingRepository.deleteById(productListingId);
             productListingRepository.save(productListingEntity.get());
 
 
@@ -365,5 +373,28 @@ public class ProductListingServiceImpl implements ProductListingService
                 .logLevel(Logger.Level.FULL)
                 .target(ProductSaveClient.class, "http://172.16.20.119:8085/product/updateproduct");
         productClient.updateMerchantPrice(listOfMerchants.get(0).getProductId(),listOfMerchants.get(0).getMerchantId(),listOfMerchants.get(0).getCost());
+    }
+
+    @Override
+    public GetSearchProductExtraDetailsResponse getSearchProductExtraDetails(String merchantId, String productId)
+    {
+        Optional<ProductListingEntity> productListingEntity=productListingRepository.findByProductIdAndMerchantId(productId,merchantId);
+        if(productListingEntity.isPresent())
+        {
+            GetSearchProductExtraDetailsResponse getSearchProductExtraDetailsResponse =new GetSearchProductExtraDetailsResponse();
+
+            getSearchProductExtraDetailsResponse.setProductListingRating(productListingEntity.get().getProductListingRating());
+            getSearchProductExtraDetailsResponse.setMerchantName(merchantRepository.findById(merchantId).get().getFirstName());
+            getSearchProductExtraDetailsResponse.setMerchantId(merchantId);
+
+
+
+            return getSearchProductExtraDetailsResponse;
+
+        }
+        else
+        {
+            return new GetSearchProductExtraDetailsResponse();
+        }
     }
 }

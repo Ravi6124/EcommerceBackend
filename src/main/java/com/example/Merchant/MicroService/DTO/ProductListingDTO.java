@@ -22,6 +22,7 @@ public class ProductListingDTO
     String imageURL;
     Double price;
     int quantity;
+    String categoryId;
     double productListingRating;
     int numberOfRatings;
     List<ProductListingEntity> orderList;

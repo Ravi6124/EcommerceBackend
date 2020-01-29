@@ -66,5 +66,11 @@ public class MerchantController
         return merchantService.displayMerchantProducts(merchantId);
     }
 
+    @PostMapping(value="/updateMerchant")
+    public ResponseEntity<HttpStatus> updateMerchant(@RequestBody MerchantDTO merchantDTO)
+    {
+        return merchantService.updateMerchant(merchantDTO);
+    }
+
 
 }
